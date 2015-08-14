@@ -1,5 +1,5 @@
 <?php
-namespace League\Glide\Responses;
+namespace ADmad\Glide\Responses;
 
 use Cake\Core\Configure;
 use Cake\Network\Response;
