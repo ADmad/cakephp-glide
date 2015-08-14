@@ -5,6 +5,7 @@ use Cake\Core\Configure;
 use Cake\Network\Response;
 use Cake\Utility\Hash;
 use League\Flysystem\FilesystemInterface;
+use League\Glide\Responses\ResponseFactoryInterface;
 
 class CakeResponseFactory implements ResponseFactoryInterface
 {
