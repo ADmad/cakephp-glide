@@ -4,6 +4,7 @@ namespace ADmad\Glide\Routing\Filter;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Routing\DispatcherFilter;
+use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
