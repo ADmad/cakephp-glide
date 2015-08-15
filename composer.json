@@ -1,9 +1,11 @@
 {
     "name": "admad/cakephp-glide",
-    "description": "CakePHP 3.x plugin for using Glide.",
+    "description": "CakePHP 3.x plugin for using Glide image manipulation library.",
     "type": "cakephp-plugin",
     "keywords": [
         "cakephp",
+        "league",
+        "glide",
         "image",
         "processing",
         "manipulation",
