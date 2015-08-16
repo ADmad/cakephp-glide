@@ -21,14 +21,15 @@ class GlideFilter extends DispatcherFilter
     public function beforeDispatch(Event $event)
     {
         $request = $event->data['request'];
+        $path = urldecode('/' . $request->url);
 
         if (Configure::read('Glide.secureUrls')) {
 	        SignatureFactory::create(Security::salt())
-	            ->validateRequest(urldecode($request->here), $request->query);
+	            ->validateRequest($path, $request->query);
         }
 
         $server = ServerFactory::create(Configure::read('Glide.serverConfig'));
-        $response = $server->getImageResponse($request->here, $request->query);
+        $response = $server->getImageResponse($path, $request->query);
 
         $headers = Hash::filter((array)Configure::read('Glide.headers'));
         if (!empty($headers['Expires']) && $headers['Expires'] === true) {

@@ -14,7 +14,7 @@ class GlideHelper extends Helper
      *
      * @var array
      */
-    public $helpers = ['Html', 'Url'];
+    public $helpers = ['Html'];
 
     /**
      * URL builder.
@@ -28,13 +28,12 @@ class GlideHelper extends Helper
      *
      * @param string $path Image path.
      * @param array $params Image manipulation parameters.
-     * @param array $options Array of HTML attributes and options.
-     *   See `$options` argument of `Cake\View\HtmlHelper::image()`.
+     * @param array $options Array of HTML attributes for image tag.
      * @return string Complete <img> tag.
      */
     public function image($path, array $params = [], array $options = [])
     {
-        return $this->Html->image($this->url($path, $params), $options);
+        return $this->Html->image($this->url($path, $params + ['_base' => false]), $options);
     }
 
     /**
@@ -46,8 +45,15 @@ class GlideHelper extends Helper
      */
     public function url($path, array $params = [])
     {
-        $url = $this->Url->build($path);
-        $url = $this->urlBuilder()->getUrl($url, $params);
+        $base = true;
+        if (isset($params['_base'])) {
+            $base = $params['_base'];
+            unset($params['_base']);
+        }
+        $url = $this->urlBuilder()->getUrl($path, $params);
+        if ($base && strpos($url, 'http') !== 0) {
+            $url = $this->request->webroot . ltrim($url, '/');
+        }
 
         return $url;
     }
@@ -61,7 +67,7 @@ class GlideHelper extends Helper
     {
         if (!isset($this->_urlBuilder)) {
             $this->_urlBuilder = UrlBuilderFactory::create(
-                $this->request->webroot,
+                Configure::read('Glide.serverConfig.base_url'),
                 Configure::read('Glide.secureUrls') ? Security::salt() : null
             );
         }

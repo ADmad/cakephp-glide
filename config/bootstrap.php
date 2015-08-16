@@ -3,7 +3,8 @@ use Cake\Core\Configure;
 
 Configure::write('Glide', [
     'serverConfig' => [
-        'source' => WWW_ROOT,
+        'base_url' => '/images/',
+        'source' => WWW_ROOT . 'uploads/',
         'cache' => WWW_ROOT . 'cache',
         'response' => new ADmad\Glide\Responses\CakeResponseFactory(),
     ],
