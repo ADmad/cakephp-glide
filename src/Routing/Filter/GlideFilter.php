@@ -22,7 +22,7 @@ class GlideFilter extends DispatcherFilter
     {
         $request = $event->data['request'];
 
-        if (Configure::read('Glide.signedUrls')) {
+        if (Configure::read('Glide.secureUrls')) {
 	        SignatureFactory::create(Security::salt())
 	            ->validateRequest(urldecode($request->here), $request->query);
         }
