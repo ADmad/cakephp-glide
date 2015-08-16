@@ -3,7 +3,8 @@ use Cake\Core\Configure;
 
 Configure::write('Glide', [
     'serverConfig' => [
-        'cache' => TMP . 'glide',
+        'source' => WWW_ROOT,
+        'cache' => WWW_ROOT . 'cache',
         'response' => new ADmad\Glide\Responses\CakeResponseFactory(),
     ],
     'secureUrls' => true,

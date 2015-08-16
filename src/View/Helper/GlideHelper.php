@@ -30,7 +30,7 @@ class GlideHelper extends Helper
      * @param array $params Image manipulation parameters.
      * @param array $options Array of HTML attributes and options.
      *   See `$options` argument of `Cake\View\HtmlHelper::image()`.
-     * @return string Complet <img> tag.
+     * @return string Complete <img> tag.
      */
     public function image($path, array $params = [], array $options = [])
     {
@@ -40,7 +40,7 @@ class GlideHelper extends Helper
     /**
      * URL with query string based on resizing params.
      *
-     * @param strin $path Image path.
+     * @param string $path Image path.
      * @param array $params Image manipulation parameters.
      * @return string Image URL.
      */
