@@ -30,6 +30,7 @@ class GlideHelper extends Helper
      * @param array $params Image manipulation parameters.
      * @param array $options Array of HTML attributes for image tag.
      * @return string Complete <img> tag.
+     * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
     public function image($path, array $params = [], array $options = [])
     {
@@ -42,6 +43,7 @@ class GlideHelper extends Helper
      * @param string $path Image path.
      * @param array $params Image manipulation parameters.
      * @return string Image URL.
+     * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
     public function url($path, array $params = [])
     {
