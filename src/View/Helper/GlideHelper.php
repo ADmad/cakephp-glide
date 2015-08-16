@@ -32,9 +32,9 @@ class GlideHelper extends Helper
      *   See `$options` argument of `Cake\View\HtmlHelper::image()`.
      * @return string Complet <img> tag.
      */
-    public function image($url, array $params = [], array $options = [])
+    public function image($path, array $params = [], array $options = [])
     {
-        return $this->Html->image($this->url($url), $options);
+        return $this->Html->image($this->url($path, $params), $options);
     }
 
     /**
