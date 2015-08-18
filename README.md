@@ -1,6 +1,6 @@
-# Cakephp Glide
+# CakePHP Glide
 
-CakePHP 3.x plugin to help using [Glide](http://glide.thephpleague.com/) image manipulation library.
+CakePHP 3.x plugin to help using [Glide](http://glide.thephpleague.com/1.0/) image manipulation library.
 
 The plugin consists of a CakePHP dispatch filter, view helper and a Glide response class.
 
