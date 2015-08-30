@@ -1,5 +1,8 @@
 # CakePHP Glide
 
+[![Total Downloads](https://img.shields.io/packagist/dt/ADmad/cakephp-glide.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-glide)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.txt)
+
 CakePHP 3.x plugin to help using [Glide](http://glide.thephpleague.com/1.0/) image manipulation library.
 
 The plugin consists of a CakePHP dispatch filter, view helper and a Glide response class.
