@@ -21,7 +21,7 @@ class GlideFilter extends DispatcherFilter
     public function beforeDispatch(Event $event)
     {
         $request = $event->data['request'];
-        $path = urldecode('/' . $request->url);
+        $path = '/' . urldecode($request->url);
 
         if (Configure::read('Glide.secureUrls')) {
             SignatureFactory::create(Security::salt())
