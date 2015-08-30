@@ -2,8 +2,8 @@
 namespace ADmad\Glide\View\Helper;
 
 use Cake\Core\Configure;
-use Cake\View\Helper;
 use Cake\Utility\Security;
+use Cake\View\Helper;
 use League\Glide\Urls\UrlBuilderFactory;
 
 class GlideHelper extends Helper
