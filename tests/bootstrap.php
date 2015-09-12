@@ -22,3 +22,5 @@ $root = $findRoot(__FILE__);
 unset($findRoot);
 chdir($root);
 require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
+
+define('PLUGIN_ROOT', __DIR__);
