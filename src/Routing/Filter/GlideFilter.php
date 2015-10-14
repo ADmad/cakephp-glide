@@ -6,6 +6,7 @@ use Cake\Event\Event;
 use Cake\Routing\DispatcherFilter;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
+use DateTime;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 
@@ -21,20 +22,32 @@ class GlideFilter extends DispatcherFilter
     public function beforeDispatch(Event $event)
     {
         $request = $event->data['request'];
-        $path = '/' . urldecode($request->url);
+        $response = $event->data['response'];
+
+        $path = urldecode($request->url);
 
         if (Configure::read('Glide.secureUrls')) {
             SignatureFactory::create(Security::salt())
-                ->validateRequest($path, $request->query);
+                ->validateRequest('/' . $path, $request->query);
         }
 
         $server = ServerFactory::create(Configure::read('Glide.serverConfig'));
-        $response = $server->getImageResponse($path, $request->query);
+
+        $cache = Configure::read('Glide.cache');
+        if ($cache) {
+            $timestamp = $server->getSource()->getTimestamp($server->getSourcePath($path));
+            $response->modified($timestamp);
+
+            if (!$response->checkNotModified($request)) {
+                $response = $server->getImageResponse($path, $request->query);
+            }
+
+            $response->cache($timestamp, $cache);
+        } else {
+            $response = $server->getImageResponse($path, $request->query);
+        }
 
         $headers = Hash::filter((array)Configure::read('Glide.headers'));
-        if (!empty($headers['Expires']) && $headers['Expires'] === true) {
-            $headers['Expires'] = date_create('+1 years')->format('D, d M Y H:i:s') . ' GMT';
-        }
         foreach ($headers as $key => $value) {
             $response->header($key, $value);
         }

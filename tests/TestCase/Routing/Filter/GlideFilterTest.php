@@ -21,11 +21,6 @@ class GlideFilterTest extends TestCase
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
                 'cache' => TMP . '/cache',
                 'response' => new CakeResponseFactory,
-            ],
-            'secureUrls' => false,
-            'headers' => [
-                'Cache-Control' => 'max-age=31536000, public',
-                'Expires' => true
             ]
         ]);
 
@@ -58,7 +53,6 @@ class GlideFilterTest extends TestCase
 
         $headers = $response->header();
         $this->assertTrue(isset($headers['Content-Length']));
-        $this->assertEquals('max-age=31536000, public', $headers['Cache-Control']);
     }
 
     public function testSecureUrl()
@@ -73,5 +67,22 @@ class GlideFilterTest extends TestCase
         $response = (new GlideFilter)->beforeDispatch($this->event);
 
         $this->assertInstanceOf('Cake\Network\Response', $response);
+    }
+
+    public function testCache()
+    {
+        Configure::write('Glide.cache', '+1 days');
+
+        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
+
+        $headers = $response->header();
+        $this->assertTrue(is_callable($response->body()));
+        $this->assertTrue(isset($headers['Last-Modified']));
+        $this->assertTrue(isset($headers['Expires']));
+
+        $this->event->data['request']->env('HTTP_IF_MODIFIED_SINCE', $headers['Last-Modified']);
+        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $this->assertFalse(is_callable($response->body()));
     }
 }
