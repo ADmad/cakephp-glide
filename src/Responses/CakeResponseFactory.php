@@ -1,20 +1,18 @@
 <?php
 namespace ADmad\Glide\Responses;
 
-use Cake\Core\Configure;
 use Cake\Network\Response;
-use Cake\Utility\Hash;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Responses\ResponseFactoryInterface;
 
 class CakeResponseFactory implements ResponseFactoryInterface
 {
-
     /**
      * Create the response.
      *
      * @param \League\Flysystem\FilesystemInterface $cache The cache file system.
      * @param string $path The cached file path.
+     *
      * @return \Cake\Network\Response The response object.
      */
     public function create(FilesystemInterface $cache, $path)

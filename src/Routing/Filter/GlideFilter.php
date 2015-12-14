@@ -6,17 +6,16 @@ use Cake\Event\Event;
 use Cake\Routing\DispatcherFilter;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
-use DateTime;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 
 class GlideFilter extends DispatcherFilter
 {
-
     /**
      * Callback for Routing.beforeDispatch event.
      *
      * @param \Cake\Event\Event $event The event instance.
+     *
      * @return \Cake\Network\Response Response instance.
      */
     public function beforeDispatch(Event $event)
