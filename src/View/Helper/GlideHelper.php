@@ -1,4 +1,5 @@
 <?php
+
 namespace ADmad\Glide\View\Helper;
 
 use Cake\Core\Configure;
@@ -8,7 +9,6 @@ use League\Glide\Urls\UrlBuilderFactory;
 
 class GlideHelper extends Helper
 {
-
     /**
      * Helpers used by this helper.
      *
@@ -26,10 +26,12 @@ class GlideHelper extends Helper
     /**
      * Creates a formatted IMG element.
      *
-     * @param string $path Image path.
-     * @param array $params Image manipulation parameters.
-     * @param array $options Array of HTML attributes for image tag.
+     * @param string $path    Image path.
+     * @param array  $params  Image manipulation parameters.
+     * @param array  $options Array of HTML attributes for image tag.
+     *
      * @return string Complete <img> tag.
+     *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
     public function image($path, array $params = [], array $options = [])
@@ -40,9 +42,11 @@ class GlideHelper extends Helper
     /**
      * URL with query string based on resizing params.
      *
-     * @param string $path Image path.
-     * @param array $params Image manipulation parameters.
+     * @param string $path   Image path.
+     * @param array  $params Image manipulation parameters.
+     *
      * @return string Image URL.
+     *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
     public function url($path, array $params = [])
@@ -54,7 +58,7 @@ class GlideHelper extends Helper
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
         if ($base && strpos($url, 'http') !== 0) {
-            $url = $this->request->webroot . ltrim($url, '/');
+            $url = $this->request->webroot.ltrim($url, '/');
         }
 
         return $url;
