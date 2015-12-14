@@ -20,15 +20,15 @@ class GlideFilterTest extends TestCase
                 'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
                 'cache' => TMP . '/cache',
-                'response' => new CakeResponseFactory,
-            ]
+                'response' => new CakeResponseFactory(),
+            ],
         ]);
 
-        $request = new Request;
+        $request = new Request();
         $request->url = 'images/cake-logo.png';
         $request->query = ['w' => 100];
 
-        $response = new Response;
+        $response = new Response();
         $this->event = new Event(
             'Dispatcher.beforeDispatch',
             null,
@@ -45,7 +45,7 @@ class GlideFilterTest extends TestCase
 
     public function testBeforeDispatch()
     {
-        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $response = (new GlideFilter())->beforeDispatch($this->event);
 
         $this->assertInstanceOf('Cake\Network\Response', $response);
         $this->assertTrue(is_callable($response->body()));
@@ -64,7 +64,7 @@ class GlideFilterTest extends TestCase
 
         $this->event->data['request']->url = 'images/cake%20logo.png';
         $this->event->data['request']->query = ['w' => 100, 's' => $sig];
-        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $response = (new GlideFilter())->beforeDispatch($this->event);
 
         $this->assertInstanceOf('Cake\Network\Response', $response);
     }
@@ -73,7 +73,7 @@ class GlideFilterTest extends TestCase
     {
         Configure::write('Glide.cache', '+1 days');
 
-        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $response = (new GlideFilter())->beforeDispatch($this->event);
         $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
 
         $headers = $response->header();
@@ -82,7 +82,7 @@ class GlideFilterTest extends TestCase
         $this->assertTrue(isset($headers['Expires']));
 
         $this->event->data['request']->env('HTTP_IF_MODIFIED_SINCE', $headers['Last-Modified']);
-        $response = (new GlideFilter)->beforeDispatch($this->event);
+        $response = (new GlideFilter())->beforeDispatch($this->event);
         $this->assertFalse(is_callable($response->body()));
     }
 }
