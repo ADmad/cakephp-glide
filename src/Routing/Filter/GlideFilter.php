@@ -1,4 +1,5 @@
 <?php
+
 namespace ADmad\Glide\Routing\Filter;
 
 use Cake\Core\Configure;
@@ -6,17 +7,16 @@ use Cake\Event\Event;
 use Cake\Routing\DispatcherFilter;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
-use DateTime;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 
 class GlideFilter extends DispatcherFilter
 {
-
     /**
      * Callback for Routing.beforeDispatch event.
      *
      * @param \Cake\Event\Event $event The event instance.
+     *
      * @return \Cake\Network\Response Response instance.
      */
     public function beforeDispatch(Event $event)
@@ -28,7 +28,7 @@ class GlideFilter extends DispatcherFilter
 
         if (Configure::read('Glide.secureUrls')) {
             SignatureFactory::create(Security::salt())
-                ->validateRequest('/' . $path, $request->query);
+                ->validateRequest('/'.$path, $request->query);
         }
 
         $server = ServerFactory::create(Configure::read('Glide.serverConfig'));
@@ -47,7 +47,7 @@ class GlideFilter extends DispatcherFilter
             $response = $server->getImageResponse($path, $request->query);
         }
 
-        $headers = Hash::filter((array)Configure::read('Glide.headers'));
+        $headers = Hash::filter((array) Configure::read('Glide.headers'));
         foreach ($headers as $key => $value) {
             $response->header($key, $value);
         }

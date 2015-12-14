@@ -1,4 +1,5 @@
 <?php
+
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
@@ -14,11 +15,11 @@ class GlideHelperTest extends TestCase
     {
         Configure::write('Glide', [
             'serverConfig' => [
-                'base_url' => '/images/'
+                'base_url' => '/images/',
             ],
         ]);
 
-        $this->request = new Request;
+        $this->request = new Request();
         $this->request->webroot = '/';
         $this->view = new View($this->request);
         $this->helper = new GlideHelper($this->view);
@@ -51,20 +52,20 @@ class GlideHelperTest extends TestCase
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
         $this->assertHtml([
             'img' => [
-                'src' => '/images/logo.png?w=100',
+                'src'   => '/images/logo.png?w=100',
                 'width' => 100,
-                'alt' => ''
-            ]
+                'alt'   => '',
+            ],
         ], $result);
 
         $this->helper->request->webroot = '/subfolder/';
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
         $this->assertHtml([
             'img' => [
-                'src' => '/subfolder/images/logo.png?w=100',
+                'src'   => '/subfolder/images/logo.png?w=100',
                 'width' => 100,
-                'alt' => ''
-            ]
+                'alt'   => '',
+            ],
         ], $result);
     }
 }
