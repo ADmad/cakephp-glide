@@ -29,7 +29,7 @@
     },
     "require": {
         "cakephp/cakephp": "~3.0",
-        "league/glide": "dev-master"
+        "league/glide": "~1.0"
     },
     "autoload": {
         "psr-4": {
