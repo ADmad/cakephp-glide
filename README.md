@@ -31,18 +31,18 @@ An example is shown below:
 ```php
 Configure::write('Glide', [
     // Value of 'serverConfig' is passed as argument to Glide's ServerFactory::create() call.
-    // http://glide.thephpleague.com/1.0/config/the-server/
+    // http://glide.thephpleague.com/1.0/config/setup/
     'serverConfig' => [
-        // Optional: URL part to be omitted from source path
-        // http://glide.thephpleague.com/1.0/config/base-url/
-        'base_url' => '/images/',
-
         // Path or League\Flysystem adapter instance to read images from.
         // http://glide.thephpleague.com/1.0/config/source-and-cache/
         'source' => WWW_ROOT . 'uploads/',
 
         // Path or League\Flysystem adapter instance to write cached images to.
         'cache' => WWW_ROOT . 'cache',
+
+        // Optional: URL part to be omitted from source path
+        // http://glide.thephpleague.com/1.0/config/source-and-cache/#set-a-base-url
+        'base_url' => '/images/',
 
         // Response class for serving images. You normally don't need to change this.
         // There's an official response class for CakePHP too but this one provides
@@ -52,7 +52,7 @@ Configure::write('Glide', [
     ],
 
     // Optional: Use secure URLs to prevent URL parameter manipulation.
-    // http://glide.thephpleague.com/1.0/config/secure-images/
+    // http://glide.thephpleague.com/1.0/config/security/
     'secureUrls' => true,
 
     // Optional: Cache duration. This makes GlideFilter set appropriate cache headers.
