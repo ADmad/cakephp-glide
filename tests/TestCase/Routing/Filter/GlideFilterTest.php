@@ -85,4 +85,14 @@ class GlideFilterTest extends TestCase
         $response = (new GlideFilter())->beforeDispatch($this->event);
         $this->assertFalse(is_callable($response->body()));
     }
+
+    public function testHeaders()
+    {
+        Configure::write('Glide.headers', [
+            'X-Custom' => 'some-value'
+        ]);
+
+        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $this->assertEquals('some-value', $response->header()['X-Custom']);
+    }
 }
