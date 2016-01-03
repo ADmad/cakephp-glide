@@ -89,7 +89,7 @@ class GlideFilterTest extends TestCase
     public function testHeaders()
     {
         Configure::write('Glide.headers', [
-            'X-Custom' => 'some-value'
+            'X-Custom' => 'some-value',
         ]);
 
         $response = (new GlideFilter())->beforeDispatch($this->event);
