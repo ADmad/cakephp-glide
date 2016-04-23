@@ -1,7 +1,6 @@
 <?php
 namespace ADmad\Glide\TestCase\Routing\Filter;
 
-use ADmad\Glide\Responses\CakeResponseFactory;
 use ADmad\Glide\Routing\Filter\GlideFilter;
 use Cake\Core\Configure;
 use Cake\Event\Event;
@@ -19,8 +18,7 @@ class GlideFilterTest extends TestCase
             'serverConfig' => [
                 'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
-                'cache' => TMP . '/cache',
-                'response' => new CakeResponseFactory(),
+                'cache' => TMP . '/cache'
             ],
         ]);
 

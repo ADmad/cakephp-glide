@@ -1,10 +1,10 @@
 <?php
 namespace ADmad\Glide\Routing\Filter;
 
+use ADmad\Glide\Responses\CakeResponseFactory;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Routing\DispatcherFilter;
-use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
@@ -22,18 +22,22 @@ class GlideFilter extends DispatcherFilter
     {
         $request = $event->data['request'];
         $response = $event->data['response'];
+        $config = Configure::read('Glide');
 
         $path = urldecode($request->url);
 
-        if (Configure::read('Glide.secureUrls')) {
+        if (!empty($config['secureUrls'])) {
             SignatureFactory::create(Security::salt())
                 ->validateRequest('/' . $path, $request->query);
         }
 
-        $server = ServerFactory::create(Configure::read('Glide.serverConfig'));
+        $server = ServerFactory::create($config['serverConfig']);
 
-        $cache = Configure::read('Glide.cache');
-        if ($cache) {
+        if (empty($config['serverConfig']['response'])) {
+            $server->setResponseFactory(new CakeResponseFactory());
+        }
+
+        if (!empty($config['cache'])) {
             $timestamp = $server->getSource()->getTimestamp($server->getSourcePath($path));
             $response->modified($timestamp);
 
@@ -41,14 +45,15 @@ class GlideFilter extends DispatcherFilter
                 $response = $server->getImageResponse($path, $request->query);
             }
 
-            $response->cache($timestamp, $cache);
+            $response->cache($timestamp, $config['cache']);
         } else {
             $response = $server->getImageResponse($path, $request->query);
         }
 
-        $headers = Hash::filter((array)Configure::read('Glide.headers'));
-        foreach ($headers as $key => $value) {
-            $response->header($key, $value);
+        if (!empty($config['headers'])) {
+            foreach ($config['headers'] as $key => $value) {
+                $response->header($key, $value);
+            }
         }
 
         return $response;

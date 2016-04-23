@@ -44,11 +44,11 @@ Configure::write('Glide', [
         // http://glide.thephpleague.com/1.0/config/source-and-cache/#set-a-base-url
         'base_url' => '/images/',
 
-        // Response class for serving images. You normally don't need to change this.
-        // There's an official response class for CakePHP too but this one provides
-        // more flexibility.
+        // Optional: Response class for serving images. You normally don't need
+        // to change this. By default an instance of \ADmad\Glide\Responses\CakeResponseFactory()
+        // will be used.
         // http://glide.thephpleague.com/1.0/config/responses/
-        'response' => new ADmad\Glide\Responses\CakeResponseFactory(),
+        'response' => null,
     ],
 
     // Optional: Use secure URLs to prevent URL parameter manipulation.
