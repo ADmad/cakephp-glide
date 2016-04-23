@@ -18,7 +18,7 @@ class GlideFilterTest extends TestCase
             'serverConfig' => [
                 'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
-                'cache' => TMP . '/cache'
+                'cache' => TMP . '/cache',
             ],
         ]);
 
