@@ -82,6 +82,7 @@ class GlideFilterTest extends TestCase
         $this->event->data['request']->env('HTTP_IF_MODIFIED_SINCE', $headers['Last-Modified']);
         $response = (new GlideFilter())->beforeDispatch($this->event);
         $this->assertFalse(is_callable($response->body()));
+        $this->assertFalse(isset($response->header()['Expires']));
     }
 
     public function testHeaders()

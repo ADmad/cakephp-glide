@@ -43,9 +43,8 @@ class GlideFilter extends DispatcherFilter
 
             if (!$response->checkNotModified($request)) {
                 $response = $server->getImageResponse($path, $request->query);
+                $response->cache($timestamp, $config['cache']);
             }
-
-            $response->cache($timestamp, $config['cache']);
         } else {
             $response = $server->getImageResponse($path, $request->query);
         }
