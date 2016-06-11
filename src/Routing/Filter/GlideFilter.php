@@ -85,7 +85,7 @@ class GlideFilter extends DispatcherFilter
      * @param \League\Glide\Server $server Glide server.
      * @param string $path Image path.
      * @param \Cake\Network\Request $request Request instance.
-     * @param \Cake\Network\Response $request Request instance.
+     * @param \Cake\Network\Response $response Response instance.
      *
      * @return \Cake\Network\Response Response instance.
      */
