@@ -2,7 +2,6 @@
 namespace ADmad\Glide\Routing\Filter;
 
 use ADmad\Glide\Responses\CakeResponseFactory;
-use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Network\Request;
 use Cake\Network\Response;
@@ -14,7 +13,6 @@ use League\Glide\Signatures\SignatureFactory;
 
 class GlideFilter extends DispatcherFilter
 {
-
     /**
      * Default priority for all methods in this filter.
      *
@@ -106,7 +104,7 @@ class GlideFilter extends DispatcherFilter
         return [
             'Dispatcher.beforeDispatch' => [
                 'callable' => 'handle',
-                'priority' => $this->_config['priority']
+                'priority' => $this->_config['priority'],
             ],
         ];
     }
