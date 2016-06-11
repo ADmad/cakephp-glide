@@ -85,6 +85,9 @@ class GlideHelper extends Helper
     /**
      * Get URL builder instance.
      *
+     * @param \League\Urls\UrlBuilder|null $urlBuilder URL builder instance to
+     *   set or null to get instance.
+     *
      * @return \League\Urls\UrlBuilder URL builder instance.
      */
     public function urlBuilder($urlBuilder = null)
