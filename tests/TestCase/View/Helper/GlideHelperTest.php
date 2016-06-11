@@ -2,7 +2,6 @@
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
-use Cake\Core\Configure;
 use Cake\Network\Request;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -31,7 +30,7 @@ class GlideHelperTest extends TestCase
 
         $helper = new GlideHelper($this->view, [
             'baseUrl' => '/images/',
-            'secureUrls' => true
+            'secureUrls' => true,
         ]);
         $result = $helper->url('logo.png', ['w' => 100]);
         $this->assertContains('&s=', $result);
