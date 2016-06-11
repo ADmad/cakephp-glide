@@ -15,7 +15,7 @@ class GlideFilterTest extends TestCase
     public function setUp()
     {
         $this->config = [
-            'serverConfig' => [
+            'server' => [
                 'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
                 'cache' => TMP . '/cache',

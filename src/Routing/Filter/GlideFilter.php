@@ -55,7 +55,10 @@ class GlideFilter extends DispatcherFilter
             );
         }
 
-        $server = ServerFactory::create($config['serverConfig']);
+        $server = $config['server'];
+        if (is_array($server)) {
+            $server = ServerFactory::create($server);
+        }
 
         if (empty($config['serverConfig']['response'])) {
             $server->setResponseFactory(new CakeResponseFactory());

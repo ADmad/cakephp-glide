@@ -35,9 +35,10 @@ DispatcherFactory::add('ADmad/Glide.Glide', [
     // Run this filter only for URLs starting with "/images/"
     'for' => '/images/',
 
-    // Value of 'serverConfig' is passed as argument to Glide's ServerFactory::create() call.
+    // Either an instance of League\Glide\Server or config array to be used to
+    // create server instance using League\Glide\ServerFactory::create().
     // http://glide.thephpleague.com/1.0/config/setup/
-    'serverConfig' => [
+    'server' => [
         // Path or League\Flysystem adapter instance to read images from.
         // http://glide.thephpleague.com/1.0/config/source-and-cache/
         'source' => WWW_ROOT . 'uploads/',
