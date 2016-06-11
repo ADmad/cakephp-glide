@@ -1,14 +1,12 @@
 <?php
 namespace ADmad\Glide\View\Helper;
 
-use Cake\Core\Configure;
 use Cake\Utility\Security;
 use Cake\View\Helper;
 use League\Glide\Urls\UrlBuilderFactory;
 
 class GlideHelper extends Helper
 {
-
     /**
      * Helpers used by this helper.
      *
@@ -30,7 +28,7 @@ class GlideHelper extends Helper
     protected $_defaultConfig = [
         'baseUrl' => '',
         'secureUrls' => false,
-        'signKey' => null
+        'signKey' => null,
     ];
 
     /**
