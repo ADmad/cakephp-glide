@@ -48,8 +48,11 @@ class GlideFilter extends DispatcherFilter
         $path = urldecode($request->url);
 
         if (!empty($config['secureUrls'])) {
-            SignatureFactory::create(Security::salt())
-                ->validateRequest('/' . $path, $request->query);
+            $signKey = !empty($config['signKey']) ? $config['signKey'] : Security::salt();
+            SignatureFactory::create($signKey)->validateRequest(
+                '/' . $path,
+                $request->query
+            );
         }
 
         $server = ServerFactory::create($config['serverConfig']);

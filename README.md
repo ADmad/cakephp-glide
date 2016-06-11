@@ -60,6 +60,10 @@ DispatcherFactory::add('ADmad/Glide.Glide', [
     // http://glide.thephpleague.com/1.0/config/security/
     'secureUrls' => true,
 
+    // Optional: Signing key used to generate / validate URLs if `secureUrls` is `true`.
+    // If not set value of Security::salt() will be used.
+    'signKey' => null,
+
     // Optional: Cache duration. This makes GlideFilter set appropriate cache headers.
     'cache' => '+1 days',
 
