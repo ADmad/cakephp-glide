@@ -14,13 +14,13 @@ class GlideFilterTest extends TestCase
 {
     public function setUp()
     {
-        Configure::write('Glide', [
+        $this->config = [
             'serverConfig' => [
                 'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
                 'cache' => TMP . '/cache',
             ],
-        ]);
+        ];
 
         $request = new Request();
         $request->url = 'images/cake-logo.png';
@@ -43,7 +43,7 @@ class GlideFilterTest extends TestCase
 
     public function testBeforeDispatch()
     {
-        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
 
         $this->assertInstanceOf('Cake\Network\Response', $response);
         $this->assertTrue(is_callable($response->body()));
@@ -55,23 +55,23 @@ class GlideFilterTest extends TestCase
 
     public function testSecureUrl()
     {
-        Configure::write('Glide.secureUrls', true);
+        $this->config['secureUrls'] = true;
 
         $signature = new Signature(Security::salt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
         $this->event->data['request']->url = 'images/cake%20logo.png';
         $this->event->data['request']->query = ['w' => 100, 's' => $sig];
-        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
 
         $this->assertInstanceOf('Cake\Network\Response', $response);
     }
 
     public function testCache()
     {
-        Configure::write('Glide.cache', '+1 days');
+        $this->config['cache'] = '+1 days';
 
-        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
         $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
 
         $headers = $response->header();
@@ -80,18 +80,18 @@ class GlideFilterTest extends TestCase
         $this->assertTrue(isset($headers['Expires']));
 
         $this->event->data['request']->env('HTTP_IF_MODIFIED_SINCE', $headers['Last-Modified']);
-        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
         $this->assertFalse(is_callable($response->body()));
         $this->assertFalse(isset($response->header()['Expires']));
     }
 
     public function testHeaders()
     {
-        Configure::write('Glide.headers', [
+        $this->config['headers'] = [
             'X-Custom' => 'some-value',
-        ]);
+        ];
 
-        $response = (new GlideFilter())->beforeDispatch($this->event);
+        $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
         $this->assertEquals('some-value', $response->header()['X-Custom']);
     }
 }
