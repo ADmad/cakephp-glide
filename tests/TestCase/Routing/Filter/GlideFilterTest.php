@@ -94,4 +94,17 @@ class GlideFilterTest extends TestCase
         $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
         $this->assertEquals('some-value', $response->header()['X-Custom']);
     }
+
+    public function testImplementedEvents()
+    {
+        $expected = [
+            'Dispatcher.beforeDispatch' => [
+                'callable' => 'handle',
+                'priority' => 8,
+            ],
+        ];
+
+        $result = (new GlideFilter($this->config))->implementedEvents();
+        $this->assertEquals($expected, $result);
+    }
 }
