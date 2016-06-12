@@ -68,7 +68,7 @@ DispatcherFactory::add('ADmad/Glide.Glide', [
     // Optional: Cache duration. This makes GlideFilter set appropriate cache headers.
     'cache' => '+1 days',
 
-    // Optional: Any response headers you may want to set
+    // Optional: Any response headers you may want to set.
     'headers' => [
         'X-Custom' => 'some-value',
     ]
@@ -85,8 +85,26 @@ webserver itself and request won't reach your CakePHP app.
 ### Helper
 
 The provided `GlideHelper` helps creating URLs and image tags for generating
-images. You can load the helper using `$this->loadHelper('ADmad/Glide.Glide')`
-in your `AppView::initialize()` method. Here are the available methods:
+images. You can load the helper in your `AppView::initialize()` as shown in
+example below:
+
+```php
+public function initialize()
+{
+    // All option values should match the corresponding options for `GlideFilter`.
+    $this->loadHelper('ADmad/Glide.Glide', [
+        // Base URL.
+        'baseUrl' => '/images',
+        // Whether to generate secure URLs.
+        'secureUrls' => false,
+        // Signing key to use when generating secure URLs.
+        'signKey' => null,
+    ]);
+}
+
+```
+
+Here are the available methods of `GlideHelper`:
 
 ```php
     /**
