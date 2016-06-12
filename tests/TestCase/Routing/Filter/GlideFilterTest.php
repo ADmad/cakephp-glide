@@ -16,7 +16,6 @@ class GlideFilterTest extends TestCase
     {
         $this->config = [
             'server' => [
-                'base_url' => '/images/',
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
                 'cache' => TMP . '/cache',
             ],
@@ -55,7 +54,7 @@ class GlideFilterTest extends TestCase
 
     public function testSecureUrl()
     {
-        $this->config['secureUrls'] = true;
+        $this->config['security']['secureUrls'] = true;
 
         $signature = new Signature(Security::salt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
@@ -69,8 +68,6 @@ class GlideFilterTest extends TestCase
 
     public function testCache()
     {
-        $this->config['cache'] = '+1 days';
-
         $response = (new GlideFilter($this->config))->beforeDispatch($this->event);
         $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
 

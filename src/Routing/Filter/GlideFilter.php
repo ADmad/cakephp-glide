@@ -23,6 +23,27 @@ class GlideFilter extends DispatcherFilter
     protected $_priority = 8;
 
     /**
+     * Default config.
+     *
+     * @var array
+     */
+    protected $_defaultConfig = [
+        'when' => null,
+        'for' => null,
+        'priority' => null,
+        'cacheTime' => '+1 days',
+        'server' => [
+            'base_url' => '/images/',
+            'response' => null,
+        ],
+        'security' => [
+            'secureUrls' => false,
+            'signKey' => null,
+        ],
+        'headers' => null
+    ];
+
+    /**
      * Constructor.
      *
      * @param array $config Array of config.
@@ -30,6 +51,15 @@ class GlideFilter extends DispatcherFilter
     public function __construct($config = [])
     {
         parent::__construct($config);
+
+        if ($this->config('for') === null) {
+            $server = $this->config('server');
+            if (is_array($server)) {
+                $this->config('for', $server['base_url']);
+            } else {
+                $this->config('for', $server->getBaseUrl());
+            }
+        }
     }
 
     /**
@@ -43,12 +73,12 @@ class GlideFilter extends DispatcherFilter
     {
         $request = $event->data['request'];
         $response = $event->data['response'];
-        $config = &$this->_config;
+        $config = $this->config();
 
         $path = urldecode($request->url);
 
-        if (!empty($config['secureUrls'])) {
-            $signKey = !empty($config['signKey']) ? $config['signKey'] : Security::salt();
+        if ($config['security']['secureUrls']) {
+            $signKey = $config['security']['signKey'] ?: Security::salt();
             SignatureFactory::create($signKey)->validateRequest(
                 '/' . $path,
                 $request->query
@@ -60,26 +90,24 @@ class GlideFilter extends DispatcherFilter
             $server = ServerFactory::create($server);
         }
 
-        if (empty($config['serverConfig']['response'])) {
+        if ($server->getResponseFactory() === null) {
             $server->setResponseFactory(new CakeResponseFactory());
         }
 
-        if (!empty($config['cache'])) {
+        if ($config['cacheTime']) {
             $timestamp = $server->getSource()->getTimestamp($server->getSourcePath($path));
             $response->modified($timestamp);
 
             if (!$response->checkNotModified($request)) {
                 $response = $this->_getResponse($server, $path, $request, $response);
-                $response->cache($timestamp, $config['cache']);
+                $response->cache($timestamp, $config['cacheTime']);
             }
         } else {
             $response = $this->_getResponse($server, $path, $request, $response);
         }
 
         if (!empty($config['headers'])) {
-            foreach ($config['headers'] as $key => $value) {
-                $response->header($key, $value);
-            }
+            $response->header($config['headers']);
         }
 
         return $response;
