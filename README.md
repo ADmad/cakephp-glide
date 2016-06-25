@@ -69,6 +69,10 @@ DispatcherFactory::add('ADmad/Glide.Glide', [
         'signKey' => null,
     ],
 
+    // If set to `true` exception generated when trying to get image from Glide
+    // will be ignored and request will be allowed to proceed. Default false.
+    'ignoreException' => false,
+
     // Cache duration. Default '+1 days'.
     'cache' => '+1 days',
 

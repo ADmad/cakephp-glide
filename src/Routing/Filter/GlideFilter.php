@@ -40,7 +40,8 @@ class GlideFilter extends DispatcherFilter
             'secureUrls' => false,
             'signKey' => null,
         ],
-        'headers' => null
+        'headers' => null,
+        'ignoreException' => false
     ];
 
     /**
@@ -94,16 +95,25 @@ class GlideFilter extends DispatcherFilter
             $server->setResponseFactory(new CakeResponseFactory());
         }
 
+        $getResponse = true;
         if ($config['cacheTime']) {
             $timestamp = $server->getSource()->getTimestamp($server->getSourcePath($path));
             $response->modified($timestamp);
 
-            if (!$response->checkNotModified($request)) {
-                $response = $this->_getResponse($server, $path, $request, $response);
+            if ($response->checkNotModified($request)) {
+                $getResponse = false;
+            }
+        }
+
+        if ($getResponse) {
+            $response = $this->_getResponse($server, $path, $request, $response);
+            if ($response === null) {
+                return null;
+            }
+
+            if ($config['cacheTime']) {
                 $response->cache($timestamp, $config['cacheTime']);
             }
-        } else {
-            $response = $this->_getResponse($server, $path, $request, $response);
         }
 
         if (!empty($config['headers'])) {
@@ -121,11 +131,22 @@ class GlideFilter extends DispatcherFilter
      * @param \Cake\Network\Request $request Request instance.
      * @param \Cake\Network\Response $response Response instance.
      *
-     * @return \Cake\Network\Response Response instance.
+     * @return \Cake\Network\Response|null Response instance on success else null
+     *
+     * @throws \Exception
      */
     protected function _getResponse(Server $server, $path, Request $request, Response $response)
     {
-        return $server->getImageResponse($path, $request->query);
+        try {
+            $response = $server->getImageResponse($path, $request->query);
+        } catch (\Exception $e) {
+            if ($this->config('ignoreException')) {
+                return null;
+            }
+            throw $e;
+        }
+
+        return $response;
     }
 
     /**
