@@ -68,7 +68,7 @@ class GlideFilter extends DispatcherFilter
      *
      * @param \Cake\Event\Event $event The event instance.
      *
-     * @return \Cake\Network\Response Response instance.
+     * @return \Cake\Network\Response|null Response instance or null.
      */
     public function beforeDispatch(Event $event)
     {
