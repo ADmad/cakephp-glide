@@ -108,7 +108,7 @@ class GlideFilter extends DispatcherFilter
         if ($getResponse) {
             $response = $this->_getResponse($server, $path, $request, $response);
             if ($response === null) {
-                return null;
+                return;
             }
 
             if ($config['cacheTime']) {
@@ -141,7 +141,7 @@ class GlideFilter extends DispatcherFilter
             $response = $server->getImageResponse($path, $request->query);
         } catch (\Exception $e) {
             if ($this->config('ignoreException')) {
-                return null;
+                return;
             }
             throw $e;
         }
