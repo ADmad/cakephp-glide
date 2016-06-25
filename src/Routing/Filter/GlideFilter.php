@@ -41,7 +41,7 @@ class GlideFilter extends DispatcherFilter
             'signKey' => null,
         ],
         'headers' => null,
-        'ignoreException' => false
+        'ignoreException' => false,
     ];
 
     /**
@@ -68,7 +68,7 @@ class GlideFilter extends DispatcherFilter
      *
      * @param \Cake\Event\Event $event The event instance.
      *
-     * @return \Cake\Network\Response Response instance.
+     * @return \Cake\Network\Response|null Response instance or null.
      */
     public function beforeDispatch(Event $event)
     {
@@ -131,9 +131,9 @@ class GlideFilter extends DispatcherFilter
      * @param \Cake\Network\Request $request Request instance.
      * @param \Cake\Network\Response $response Response instance.
      *
-     * @return \Cake\Network\Response|null Response instance on success else null
-     *
      * @throws \Exception
+     *
+     * @return \Cake\Network\Response|null Response instance on success else null
      */
     protected function _getResponse(Server $server, $path, Request $request, Response $response)
     {
