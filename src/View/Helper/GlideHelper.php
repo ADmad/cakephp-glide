@@ -18,7 +18,7 @@ class GlideHelper extends Helper
      * Default config for this helper.
      *
      * Valid keys:
-     * - `baseUrl`: Base URL. Default ''.
+     * - `baseUrl`: Base URL. Default '/images/'.
      * - `secureUrls`: Whether to generate secure URLs. Default `false`.
      * - `signKey`: Signing key to use when generating secure URLs. If empty
      *   value of `Security::salt()` will be used. Default `null`.
@@ -26,7 +26,7 @@ class GlideHelper extends Helper
      * @var array
      */
     protected $_defaultConfig = [
-        'baseUrl' => '',
+        'baseUrl' => '/images/',
         'secureUrls' => false,
         'signKey' => null,
     ];

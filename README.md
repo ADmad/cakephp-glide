@@ -102,7 +102,7 @@ public function initialize()
     // All option values should match the corresponding options for `GlideFilter`.
     $this->loadHelper('ADmad/Glide.Glide', [
         // Base URL.
-        'baseUrl' => '/images',
+        'baseUrl' => '/images/',
         // Whether to generate secure URLs.
         'secureUrls' => false,
         // Signing key to use when generating secure URLs.
