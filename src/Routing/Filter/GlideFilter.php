@@ -41,7 +41,7 @@ class GlideFilter extends DispatcherFilter
             'signKey' => null,
         ],
         'headers' => null,
-        'ignoreException' => false
+        'ignoreException' => false,
     ];
 
     /**
@@ -108,7 +108,7 @@ class GlideFilter extends DispatcherFilter
         if ($getResponse) {
             $response = $this->_getResponse($server, $path, $request, $response);
             if ($response === null) {
-                return null;
+                return;
             }
 
             if ($config['cacheTime']) {
@@ -131,9 +131,9 @@ class GlideFilter extends DispatcherFilter
      * @param \Cake\Network\Request $request Request instance.
      * @param \Cake\Network\Response $response Response instance.
      *
-     * @return \Cake\Network\Response|null Response instance on success else null
-     *
      * @throws \Exception
+     *
+     * @return \Cake\Network\Response|null Response instance on success else null
      */
     protected function _getResponse(Server $server, $path, Request $request, Response $response)
     {
@@ -141,7 +141,7 @@ class GlideFilter extends DispatcherFilter
             $response = $server->getImageResponse($path, $request->query);
         } catch (\Exception $e) {
             if ($this->config('ignoreException')) {
-                return null;
+                return;
             }
             throw $e;
         }
