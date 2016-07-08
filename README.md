@@ -1,7 +1,7 @@
 # CakePHP Glide
 
 [![Build Status](https://img.shields.io/travis/ADmad/cakephp-glide/master.svg?style=flat-square)](https://travis-ci.org/ADmad/cakephp-glide)
-[![Coverage](https://img.shields.io/coveralls/ADmad/cakephp-glide/master.svg?style=flat-square)](https://coveralls.io/r/ADmad/cakephp-glide)
+[![Coverage Status](https://img.shields.io/codecov/c/github/ADmad/cakephp-i18n.svg?style=flat-square)](https://codecov.io/github/ADmad/cakephp-i18n)
 [![Total Downloads](https://img.shields.io/packagist/dt/ADmad/cakephp-glide.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-glide)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.txt)
 
