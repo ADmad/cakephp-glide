@@ -175,6 +175,7 @@ class GlideMiddleware
      * Check the not modified header.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request to check.
+     * @param string|int $modifiedTime Last modified time of file.
      *
      * @return bool
      */
