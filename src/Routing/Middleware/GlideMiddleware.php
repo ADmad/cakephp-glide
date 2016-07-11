@@ -7,10 +7,9 @@ use Cake\Utility\Security;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
-use Zend\Diactoros\Stream;
 
 class GlideMiddleware
 {
@@ -118,6 +117,7 @@ class GlideMiddleware
             if ($this->_isNotModified($request, $modifiedTime)) {
                 $response = new Response('php://memory', 304);
                 $response = $this->_setHeaders($response);
+
                 return $response->withHeader('Last-Modified', (string)$modifiedTime);
             }
         }
@@ -184,6 +184,7 @@ class GlideMiddleware
         if (!$modifiedSince) {
             return false;
         }
+
         return strtotime($modifiedSince) === (int)$modifiedTime;
     }
 
