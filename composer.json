@@ -28,7 +28,7 @@
         "issues":"https://github.com/ADmad/cakephp-glide/issues"
     },
     "require": {
-        "cakephp/cakephp": "~3.0",
+        "cakephp/cakephp": "~3.3",
         "league/glide": "~1.0"
     },
     "autoload": {
@@ -41,9 +41,6 @@
             "ADmad\\Glide\\Test\\": "tests"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
-    }
+    "minimum-stability": "beta",
+    "prefer-stable": true
 }
