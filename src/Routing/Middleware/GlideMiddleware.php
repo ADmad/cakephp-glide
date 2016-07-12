@@ -70,7 +70,7 @@ class GlideMiddleware
     }
 
     /**
-     * Callback for Dispatcher.beforeDispatch event.
+     * Return response with image data.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \Psr\Http\Message\ResponseInterface $response The response.

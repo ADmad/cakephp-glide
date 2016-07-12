@@ -39,7 +39,7 @@ $middleware->push(new ADmad\Glide\Routing\Middleware\GlideMiddleware([
     // Run this filter only for URLs matching specified value. If unset the
     // value of `server.base_url` config mentioned below will be used.
     // http://book.cakephp.org/3.0/en/development/dispatch-filters.html#conditionally-applying-filters
-    'for' => null,
+    'scope' => null,
 
     // Either an instance of League\Glide\Server or config array to be used to
     // create server instance.
