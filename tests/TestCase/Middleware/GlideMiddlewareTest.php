@@ -1,7 +1,7 @@
 <?php
-namespace ADmad\Glide\TestCase\Routing\Middleware;
+namespace ADmad\Glide\TestCase\Middleware;
 
-use ADmad\Glide\Routing\Middleware\GlideMiddleware;
+use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;

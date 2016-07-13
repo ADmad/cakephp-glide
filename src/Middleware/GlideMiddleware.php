@@ -1,5 +1,5 @@
 <?php
-namespace ADmad\Glide\Routing\Middleware;
+namespace ADmad\Glide\Middleware;
 
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
