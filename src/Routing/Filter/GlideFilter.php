@@ -54,6 +54,8 @@ class GlideFilter extends DispatcherFilter
                 $response->header($key, $value);
             }
         }
+        
+        $event->stopPropagation();
 
         return $response;
     }
