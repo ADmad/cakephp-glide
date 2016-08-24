@@ -55,6 +55,8 @@ class GlideFilter extends DispatcherFilter
             }
         }
 
+        $event->stopPropagation();
+
         return $response;
     }
 }
