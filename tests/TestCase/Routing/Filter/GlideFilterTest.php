@@ -49,6 +49,8 @@ class GlideFilterTest extends TestCase
         $this->assertTrue(is_callable($response->body()));
         $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
 
+        $this->assertTrue($this->event->isStopped());
+
         $headers = $response->header();
         $this->assertTrue(isset($headers['Content-Length']));
     }
