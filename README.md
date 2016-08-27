@@ -78,7 +78,7 @@ $middleware->push(new ADmad\Glide\Middleware\GlideMiddleware([
     'ignoreException' => false,
 
     // Cache duration. Default '+1 days'.
-    'cache' => '+1 days',
+    'cacheTime' => '+1 days',
 
     // Any response headers you may want to set. Default null.
     'headers' => [
