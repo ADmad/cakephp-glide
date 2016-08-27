@@ -29,7 +29,7 @@
     },
     "require": {
         "cakephp/cakephp": "~3.3",
-        "league/glide": "~1.0"
+        "league/glide": "~1.1"
     },
     "autoload": {
         "psr-4": {
@@ -40,7 +40,5 @@
         "psr-4": {
             "ADmad\\Glide\\Test\\": "tests"
         }
-    },
-    "minimum-stability": "beta",
-    "prefer-stable": true
+    }
 }
