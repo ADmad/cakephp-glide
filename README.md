@@ -21,7 +21,7 @@ Install the plugin through composer:
 composer require admad/cakephp-glide
 ```
 
-Load the plugin in `config/bootstrap.php` above `DispatcherFactory::add()` calls:
+Load the plugin in `config/bootstrap.php`:
 
 ```
 Plugin::load('ADmad/Glide');
