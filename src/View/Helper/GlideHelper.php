@@ -1,7 +1,6 @@
 <?php
 namespace ADmad\Glide\View\Helper;
 
-use Cake\Core\Configure;
 use Cake\Utility\Security;
 use Cake\View\Helper;
 use League\Glide\Urls\UrlBuilderFactory;
@@ -16,9 +15,26 @@ class GlideHelper extends Helper
     public $helpers = ['Html'];
 
     /**
+     * Default config for this helper.
+     *
+     * Valid keys:
+     * - `baseUrl`: Base URL. Default '/images/'.
+     * - `secureUrls`: Whether to generate secure URLs. Default `false`.
+     * - `signKey`: Signing key to use when generating secure URLs. If empty
+     *   value of `Security::salt()` will be used. Default `null`.
+     *
+     * @var array
+     */
+    protected $_defaultConfig = [
+        'baseUrl' => '/images/',
+        'secureUrls' => false,
+        'signKey' => null,
+    ];
+
+    /**
      * URL builder.
      *
-     * @var \League\Glide\Urls\UrlBuilder
+     * @var \League\Glide\Urls\UrlBuilder|null
      */
     protected $_urlBuilder;
 
@@ -35,7 +51,10 @@ class GlideHelper extends Helper
      */
     public function image($path, array $params = [], array $options = [])
     {
-        return $this->Html->image($this->url($path, $params + ['_base' => false]), $options);
+        return $this->Html->image(
+            $this->url($path, $params + ['_base' => false]),
+            $options
+        );
     }
 
     /**
@@ -66,14 +85,23 @@ class GlideHelper extends Helper
     /**
      * Get URL builder instance.
      *
+     * @param \League\Urls\UrlBuilder|null $urlBuilder URL builder instance to
+     *   set or null to get instance.
+     *
      * @return \League\Urls\UrlBuilder URL builder instance.
      */
-    public function urlBuilder()
+    public function urlBuilder($urlBuilder = null)
     {
+        if ($urlBuilder !== null) {
+            return $this->_urlBuilder = $urlBuilder;
+        }
+
         if (!isset($this->_urlBuilder)) {
+            $config = $this->_config;
+
             $this->_urlBuilder = UrlBuilderFactory::create(
-                Configure::read('Glide.serverConfig.base_url'),
-                Configure::read('Glide.secureUrls') ? Security::salt() : null
+                $config['baseUrl'],
+                $config['secureUrls'] ? ($config['signKey'] ?: Security::salt()) : null
             );
         }
 

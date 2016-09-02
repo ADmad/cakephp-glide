@@ -2,7 +2,6 @@
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
-use Cake\Core\Configure;
 use Cake\Network\Request;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -12,23 +11,12 @@ class GlideHelperTest extends TestCase
 {
     public function setUp()
     {
-        Configure::write('Glide', [
-            'serverConfig' => [
-                'base_url' => '/images/',
-            ],
-        ]);
-
         $this->request = new Request();
         $this->request->webroot = '/';
         $this->view = new View($this->request);
-        $this->helper = new GlideHelper($this->view);
+        $this->helper = new GlideHelper($this->view, ['baseUrl' => '/images/']);
 
         Security::salt('salt');
-    }
-
-    public function tearDown()
-    {
-        Configure::delete('Glide');
     }
 
     public function testUrl()
@@ -40,8 +28,10 @@ class GlideHelperTest extends TestCase
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/subfolder/images/logo.png?w=100', $result);
 
-        Configure::write('Glide.secureUrls', true);
-        $helper = new GlideHelper($this->view);
+        $helper = new GlideHelper($this->view, [
+            'baseUrl' => '/images/',
+            'secureUrls' => true,
+        ]);
         $result = $helper->url('logo.png', ['w' => 100]);
         $this->assertContains('&s=', $result);
     }

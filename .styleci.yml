@@ -7,4 +7,5 @@ disabled:
   - blankline_after_open_tag
   - concat_without_spaces
   - phpdoc_align
+  - simplified_null_return
   - spaces_cast
