@@ -116,7 +116,7 @@ class GlideMiddleware
 
             if ($this->_isNotModified($request, $modifiedTime)) {
                 $response = new Response('php://memory', 304);
-                $response = $this->_setHeaders($response);
+                $response = $this->_withCustomHeaders($response);
 
                 return $response->withHeader('Last-Modified', (string)$modifiedTime);
             }
@@ -131,17 +131,14 @@ class GlideMiddleware
         }
 
         if ($config['cacheTime']) {
-            $expire = strtotime($config['cacheTime']);
-            $maxAge = $expire - time();
-
-            $response = $response
-                ->withHeader('Cache-Control', 'public,max-age=' . $maxAge)
-                ->withHeader('Date', gmdate('D, j M Y G:i:s \G\M\T', time()))
-                ->withHeader('Last-Modified', gmdate('D, j M Y G:i:s \G\M\T', $modifiedTime))
-                ->withHeader('Expires', gmdate('D, j M Y G:i:s \G\M\T', $expire));
+            $response = $this->_withCacheHeaders(
+                $response,
+                $config['cacheTime'],
+                $modifiedTime
+            );
         }
 
-        $response = $this->_setHeaders($response);
+        $response = $this->_withCustomHeaders($response);
 
         return $response;
     }
@@ -190,13 +187,34 @@ class GlideMiddleware
     }
 
     /**
-     * Set headers in config to response instance.
+     * Return response instance with caching headers.$_COOKIE
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response The response.
+     * @param string $cacheTime Cache time.
+     * @param int $modifiedTime Modified time.
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    protected function _withCacheHeaders($response, $cacheTime, $modifiedTime)
+    {
+        $expire = strtotime($cacheTime);
+        $maxAge = $expire - time();
+
+        return $response
+            ->withHeader('Cache-Control', 'public,max-age=' . $maxAge)
+            ->withHeader('Date', gmdate('D, j M Y G:i:s \G\M\T', time()))
+            ->withHeader('Last-Modified', gmdate('D, j M Y G:i:s \G\M\T', $modifiedTime))
+            ->withHeader('Expires', gmdate('D, j M Y G:i:s \G\M\T', $expire));
+    }
+
+    /**
+     * Return response instance with headers specified in config.
      *
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function _setHeaders($response)
+    protected function _withCustomHeaders($response)
     {
         if (!empty($this->_config['headers'])) {
             foreach ($this->_config['headers'] as $key => $value) {
