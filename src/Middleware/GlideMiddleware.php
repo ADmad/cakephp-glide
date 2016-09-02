@@ -187,7 +187,7 @@ class GlideMiddleware
     }
 
     /**
-     * Return response instance with caching headers.$_COOKIE
+     * Return response instance with caching headers.$_COOKIE.
      *
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param string $cacheTime Cache time.
