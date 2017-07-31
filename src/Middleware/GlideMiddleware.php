@@ -62,9 +62,6 @@ class GlideMiddleware
      */
     public function __construct($config = [])
     {
-        if (isset($config['ignoreException'])) {
-            trigger_error('The option "ignoreException" has been deprecated, use event listener instead', E_USER_DEPRECATED);
-        }
         $this->config($config);
 
         if ($this->config('scope') === null) {
