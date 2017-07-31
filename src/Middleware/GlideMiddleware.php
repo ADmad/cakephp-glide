@@ -27,8 +27,6 @@ class GlideMiddleware implements EventDispatcherInterface
      * @var array
      */
     protected $_defaultConfig = [
-        'when' => null,
-        'scope' => null,
         'cacheTime' => '+1 days',
         'server' => [
             'base_url' => '/images/',
@@ -63,15 +61,6 @@ class GlideMiddleware implements EventDispatcherInterface
     public function __construct($config = [])
     {
         $this->config($config);
-
-        if ($this->config('scope') === null) {
-            $server = $this->config('server');
-            if (is_array($server)) {
-                $this->config('scope', $server['base_url']);
-            } else {
-                $this->config('scope', $server->getBaseUrl());
-            }
-        }
     }
 
     /**
@@ -90,10 +79,6 @@ class GlideMiddleware implements EventDispatcherInterface
         parse_str($uri->getQuery(), $this->_params);
 
         $config = $this->config();
-
-        if (strpos($this->_path, $config['scope']) !== 0) {
-            return $next($request, $response);
-        }
 
         $return = $this->_checkSignature();
         if ($return !== null) {
