@@ -5,6 +5,7 @@ use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
+use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
 use League\Glide\Server;
@@ -12,7 +13,6 @@ use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
 
 class GlideMiddleware implements EventDispatcherInterface
 {
@@ -117,7 +117,7 @@ class GlideMiddleware implements EventDispatcherInterface
             }
 
             if ($this->_isNotModified($request, $modifiedTime)) {
-                $response = new Response('php://memory', 304);
+                $response = new Response(['status' => 304]);
                 $response = $this->_withCustomHeaders($response);
 
                 return $response->withHeader('Last-Modified', (string)$modifiedTime);
@@ -244,6 +244,6 @@ class GlideMiddleware implements EventDispatcherInterface
             return $result;
         }
 
-        return new Response('php://memory', 404);
+        return new Response(['status' => 404]);
     }
 }

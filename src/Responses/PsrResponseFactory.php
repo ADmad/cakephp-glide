@@ -1,10 +1,10 @@
 <?php
 namespace ADmad\Glide\Responses;
 
+use Cake\Http\Response;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Filesystem\FilesystemException;
 use League\Glide\Responses\ResponseFactoryInterface;
-use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 
 class PsrResponseFactory implements ResponseFactoryInterface
