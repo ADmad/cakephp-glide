@@ -6,6 +6,8 @@ use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Http\Response;
+use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\NotFoundException;
 use Cake\Utility\Security;
 use Exception;
 use League\Glide\Server;
@@ -128,6 +130,8 @@ class GlideMiddleware implements EventDispatcherInterface
     /**
      * Check signature token if secure URLs are enabled.
      *
+     * @throws \Cake\Network\Exception\BadRequestException
+     *
      * @return void|\Psr\Http\Message\ResponseInterface A response
      */
     protected function _checkSignature()
@@ -143,7 +147,7 @@ class GlideMiddleware implements EventDispatcherInterface
                 $this->_params
             );
         } catch (Exception $exception) {
-            return new Response(['status' => 400]);
+            throw new BadRequestException(null, null, $exception);
         }
     }
 
@@ -232,6 +236,9 @@ class GlideMiddleware implements EventDispatcherInterface
      * @param \Psr\Http\Message\ServerRequestInterface $request Request instance.
      * @param \Psr\Http\Message\ResponseInterface $response Response instance.
      * @param \Exception $exception Exception instance.
+     *
+     * @throws \Cake\Network\Exception\NotFoundException
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     protected function _handleException($request, $response, $exception)
@@ -246,6 +253,6 @@ class GlideMiddleware implements EventDispatcherInterface
             return $result;
         }
 
-        return new Response(['status' => 404]);
+        throw new NotFoundException(null, null, $exception);
     }
 }

@@ -6,6 +6,8 @@ use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
+use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\NotFoundException;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use League\Glide\Signatures\Signature;
@@ -106,15 +108,32 @@ class GlideMiddlewareTest extends TestCase
         $this->assertEquals('some-value', $response->getHeaders()['X-Custom'][0]);
     }
 
-    public function testException()
+    public function testBadRequestException()
+    {
+        $this->config['security']['secureUrls'] = true;
+
+        $signature = new Signature(Security::salt());
+        $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
+
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/cake%20logo.png',
+        ]);
+
+        $middleware = new GlideMiddleware($this->config);
+
+        $this->expectException(BadRequestException::class);
+        $middleware($request, $this->response, $this->next);
+    }
+
+    public function testNotFoundException()
     {
         $middleware = new GlideMiddleware($this->config);
         $request = ServerRequestFactory::fromGlobals([
             'REQUEST_URI' => '/images/non-existent.jpg',
         ]);
 
-        $response = $middleware($request, $this->response, $this->next);
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->expectException(NotFoundException::class);
+        $middleware($request, $this->response, $this->next);
     }
 
     public function testExceptionEventListener()
