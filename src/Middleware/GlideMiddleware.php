@@ -105,6 +105,7 @@ class GlideMiddleware implements EventDispatcherInterface
             $server = ServerFactory::create($server);
         }
 
+        $modifiedTime = null;
         if ($config['cacheTime']) {
             try {
                 $modifiedTime = $server->getSource()
@@ -121,9 +122,6 @@ class GlideMiddleware implements EventDispatcherInterface
             }
         }
 
-        if ($server->getResponseFactory() === null) {
-            $server->setResponseFactory(new PsrResponseFactory());
-        }
         $response = $this->_getResponse($request, $response, $server);
         if ($response === null) {
             return $next($request, $response);
@@ -171,12 +169,14 @@ class GlideMiddleware implements EventDispatcherInterface
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param \League\Glide\Server $server Glide server.
      *
-     * @throws \Exception
-     *
      * @return \Psr\Http\Message\ResponseInterface|null Response instance on success else null
      */
-    protected function _getResponse(ServerRequestInterface $request, ResponseInterface $response, Server $server)
+    protected function _getResponse($request, $response, $server)
     {
+        if ($server->getResponseFactory() === null) {
+            $server->setResponseFactory(new PsrResponseFactory());
+        }
+
         try {
             $response = $server->getImageResponse($this->_path, $this->_params);
         } catch (Exception $exception) {
@@ -234,10 +234,8 @@ class GlideMiddleware implements EventDispatcherInterface
      */
     protected function _withCustomHeaders($response)
     {
-        if (!empty($this->_config['headers'])) {
-            foreach ($this->_config['headers'] as $key => $value) {
-                $response = $response->withHeader($key, $value);
-            }
+        foreach ((array)$this->config('headers') as $key => $value) {
+            $response = $response->withHeader($key, $value);
         }
 
         return $response;
