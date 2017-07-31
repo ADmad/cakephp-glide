@@ -82,10 +82,7 @@ class GlideMiddleware implements EventDispatcherInterface
 
         $config = $this->config();
 
-        $return = $this->_checkSignature();
-        if ($return !== null) {
-            return $response;
-        }
+        $this->_checkSignature();
 
         $server = $config['server'];
         if (is_array($server)) {
@@ -132,7 +129,7 @@ class GlideMiddleware implements EventDispatcherInterface
      *
      * @throws \Cake\Network\Exception\BadRequestException
      *
-     * @return void|\Psr\Http\Message\ResponseInterface A response
+     * @return void
      */
     protected function _checkSignature()
     {
@@ -198,7 +195,7 @@ class GlideMiddleware implements EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param string $cacheTime Cache time.
-     * @param int $modifiedTime Modified time.
+     * @param int|string $modifiedTime Modified time.
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -210,7 +207,7 @@ class GlideMiddleware implements EventDispatcherInterface
         return $response
             ->withHeader('Cache-Control', 'public,max-age=' . $maxAge)
             ->withHeader('Date', gmdate('D, j M Y G:i:s \G\M\T', time()))
-            ->withHeader('Last-Modified', gmdate('D, j M Y G:i:s \G\M\T', $modifiedTime))
+            ->withHeader('Last-Modified', gmdate('D, j M Y G:i:s \G\M\T', (int)$modifiedTime))
             ->withHeader('Expires', gmdate('D, j M Y G:i:s \G\M\T', $expire));
     }
 

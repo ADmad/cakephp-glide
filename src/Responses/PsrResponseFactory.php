@@ -22,7 +22,7 @@ class PsrResponseFactory implements ResponseFactoryInterface
         $stream = new Stream($cache->readStream($path));
 
         $contentType = $cache->getMimetype($path);
-        $contentLength = (string)$cache->getSize($path);
+        $contentLength = $cache->getSize($path);
 
         if ($contentType === false) {
             throw new FilesystemException('Unable to determine the image content type.');

@@ -5,6 +5,11 @@ use Cake\Utility\Security;
 use Cake\View\Helper;
 use League\Glide\Urls\UrlBuilderFactory;
 
+/**
+ * GlideHelper
+ *
+ * @property \Cake\View\Helper\HtmlHelper $Html
+ */
 class GlideHelper extends Helper
 {
     /**
@@ -85,10 +90,10 @@ class GlideHelper extends Helper
     /**
      * Get URL builder instance.
      *
-     * @param \League\Urls\UrlBuilder|null $urlBuilder URL builder instance to
+     * @param \League\Glide\Urls\UrlBuilder|null $urlBuilder URL builder instance to
      *   set or null to get instance.
      *
-     * @return \League\Urls\UrlBuilder URL builder instance.
+     * @return \League\Glide\Urls\UrlBuilder URL builder instance.
      */
     public function urlBuilder($urlBuilder = null)
     {
