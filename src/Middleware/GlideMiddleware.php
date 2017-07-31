@@ -95,12 +95,9 @@ class GlideMiddleware implements EventDispatcherInterface
             return $next($request, $response);
         }
 
-        if ($config['security']['secureUrls']) {
-            $signKey = $config['security']['signKey'] ?: Security::salt();
-            SignatureFactory::create($signKey)->validateRequest(
-                $this->_path,
-                $this->_params
-            );
+        $return = $this->_checkSignature();
+        if ($return !== null) {
+            return $response;
         }
 
         $server = $config['server'];
@@ -143,6 +140,28 @@ class GlideMiddleware implements EventDispatcherInterface
         $response = $this->_withCustomHeaders($response);
 
         return $response;
+    }
+
+    /**
+     * Check signature token if secure URLs are enabled.
+     *
+     * @return void|\Psr\Http\Message\ResponseInterface A response
+     */
+    protected function _checkSignature()
+    {
+        if (!$this->getConfig('security.secureUrls')) {
+            return;
+        }
+
+        $signKey = $this->getConfig('security.signKey') ?: Security::salt();
+        try {
+            SignatureFactory::create($signKey)->validateRequest(
+                $this->_path,
+                $this->_params
+            );
+        } catch (Exception $exception) {
+            return new Response(['status' => 400]);
+        }
     }
 
     /**
