@@ -3,7 +3,10 @@ namespace ADmad\Glide\Middleware;
 
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
+use Cake\Event\EventDispatcherInterface;
+use Cake\Event\EventDispatcherTrait;
 use Cake\Utility\Security;
+use Exception;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
@@ -11,9 +14,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 
-class GlideMiddleware
+class GlideMiddleware implements EventDispatcherInterface
 {
+    use EventDispatcherTrait;
     use InstanceConfigTrait;
+
+    const EXCEPTION_EVENT = 'Glide.exception';
 
     /**
      * Default config.
@@ -33,7 +39,6 @@ class GlideMiddleware
             'signKey' => null,
         ],
         'headers' => null,
-        'ignoreException' => false,
     ];
 
     /**
@@ -107,11 +112,8 @@ class GlideMiddleware
             try {
                 $modifiedTime = $server->getSource()
                     ->getTimestamp($server->getSourcePath($this->_path));
-            } catch (\Exception $e) {
-                if ($config['ignoreException']) {
-                    return $next($request, $response);
-                }
-                throw $e;
+            } catch (Exception $exception) {
+                return $this->_handleException($request, $response, $exception);
             }
 
             if ($this->_isNotModified($request, $modifiedTime)) {
@@ -158,11 +160,8 @@ class GlideMiddleware
     {
         try {
             $response = $server->getImageResponse($this->_path, $this->_params);
-        } catch (\Exception $e) {
-            if ($this->config('ignoreException')) {
-                return null;
-            }
-            throw $e;
+        } catch (Exception $exception) {
+            return $this->_handleException($request, $response, $exception);
         }
 
         return $response;
@@ -223,5 +222,28 @@ class GlideMiddleware
         }
 
         return $response;
+    }
+
+    /**
+     * Handle exception.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request Request instance.
+     * @param \Psr\Http\Message\ResponseInterface $response Response instance.
+     * @param \Exception $exception Exception instance.
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    protected function _handleException($request, $response, $exception)
+    {
+        $event = $this->dispatchEvent(
+            static::EXCEPTION_EVENT,
+            compact('request', 'response', 'exception')
+        );
+        $result = $event->getResult();
+
+        if ($result instanceof ResponseInterface) {
+            return $result;
+        }
+
+        return new Response('php://memory', 404);
     }
 }

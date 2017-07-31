@@ -2,12 +2,13 @@
 namespace ADmad\Glide\TestCase\Middleware;
 
 use ADmad\Glide\Middleware\GlideMiddleware;
+use Cake\Event\EventManager;
+use Cake\Http\Response;
+use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use League\Glide\Signatures\Signature;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 
 class GlideMiddlewareTest extends TestCase
@@ -103,5 +104,33 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware($this->request, $this->response, $this->next);
         $this->assertEquals('some-value', $response->getHeaders()['X-Custom'][0]);
+    }
+
+    public function testException()
+    {
+        $middleware = new GlideMiddleware($this->config);
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/non-existent.jpg',
+        ]);
+
+        $response = $middleware($request, $this->response, $this->next);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testExceptionEventListener()
+    {
+        $middleware = new GlideMiddleware($this->config);
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/non-existent.jpg',
+        ]);
+
+        EventManager::instance()->on(GlideMiddleware::EXCEPTION_EVENT, function ($event) {
+            return (new Response())
+                ->withFile(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png');
+        });
+
+        $response = $middleware($request, $this->response, $this->next);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('image/png', $response->getHeaderLine('Content-Type'));
     }
 }
