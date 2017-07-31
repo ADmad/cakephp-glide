@@ -243,16 +243,4 @@ class GlideMiddleware
 
         return $response;
     }
-
-    protected function resolveRaisedException(\Exception $exception)
-    {
-        $event = new Event(Events::EXCEPTION_RAISED, $this, [
-            'exception' => $exception
-        ]);
-        $this->eventManager()->dispatch($event);
-        if ($this->config('ignoreException') || $event->isIgnoreException()) {
-            return null;
-        }
-        throw $exception;
-    }
 }
