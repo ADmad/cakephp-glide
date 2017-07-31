@@ -12,6 +12,11 @@ class Event extends BaseEvent
     protected $ignoreException = false;
 
     /**
+     * @var ResponseInterface
+     */
+    protected $response;
+
+    /**
      * Ignore all raised exceptions
      */
     public function ignoreException()
@@ -33,7 +38,7 @@ class Event extends BaseEvent
      */
     public function setResponse(ResponseInterface $response)
     {
-        $this->setResult($response);
+        $this->response = $response;
     }
 
     /**
@@ -42,6 +47,6 @@ class Event extends BaseEvent
      */
     public function getResponse()
     {
-        return $this->getResult();
+        return $this->response;
     }
 }
