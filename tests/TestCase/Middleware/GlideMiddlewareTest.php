@@ -141,7 +141,7 @@ class GlideMiddlewareTest extends TestCase
             'REQUEST_URI' => '/images/a-not-exists-image',
         ]);
         $middleware->eventManager()->on(Events::EXCEPTION_RAISED, function(Event $event) use (&$expectedResponse){
-            $expectedResponse = new Response('', 404);
+            $expectedResponse = new Response('php://memory', 404);
             $event->setResponse($expectedResponse);
         });
         $response = $middleware($request, $this->response, $this->next);
