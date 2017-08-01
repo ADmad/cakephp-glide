@@ -6,7 +6,7 @@ use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
-use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -108,7 +108,7 @@ class GlideMiddlewareTest extends TestCase
         $this->assertEquals('some-value', $response->getHeaders()['X-Custom'][0]);
     }
 
-    public function testBadRequestException()
+    public function testForbiddenException()
     {
         $this->config['security']['secureUrls'] = true;
 
@@ -121,7 +121,9 @@ class GlideMiddlewareTest extends TestCase
 
         $middleware = new GlideMiddleware($this->config);
 
-        $this->expectException(BadRequestException::class);
+        $this->expectException(ForbiddenException::class);
+        $this->expectExceptionCode(403);
+        $this->expectExceptionMessage('Signature is missing.');
         $middleware($request, $this->response, $this->next);
     }
 

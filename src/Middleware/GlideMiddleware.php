@@ -7,7 +7,7 @@ use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
-use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Utility\Security;
 use Exception;
@@ -150,7 +150,7 @@ class GlideMiddleware implements EventDispatcherInterface
                 $this->_params
             );
         } catch (Exception $exception) {
-            throw new BadRequestException(null, null, $exception);
+            throw new ForbiddenException($exception->getMessage(), null, $exception);
         }
     }
 
