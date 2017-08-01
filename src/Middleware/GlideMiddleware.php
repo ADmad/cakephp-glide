@@ -5,6 +5,7 @@ use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
+use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\NotFoundException;
@@ -59,10 +60,15 @@ class GlideMiddleware implements EventDispatcherInterface
      * Constructor.
      *
      * @param array $config Array of config.
+     * @param \Cake\Event\EventManager|null $eventManager An event manager if you want to inject one.
      */
-    public function __construct($config = [])
+    public function __construct($config = [], EventManager $eventManager = null)
     {
         $this->setConfig($config);
+
+        if ($eventManager) {
+            $this->setEventManager($eventManager);
+        }
     }
 
     /**
