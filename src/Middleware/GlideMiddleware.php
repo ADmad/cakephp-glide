@@ -1,8 +1,12 @@
 <?php
 namespace ADmad\Glide\Middleware;
 
+use ADmad\Glide\Event;
+use ADmad\Glide\Events;
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
+use Cake\Event\EventDispatcherTrait;
+use Cake\Event\EventManager;
 use Cake\Utility\Security;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
@@ -14,6 +18,8 @@ use Zend\Diactoros\Response;
 class GlideMiddleware
 {
     use InstanceConfigTrait;
+
+    use EventDispatcherTrait;
 
     /**
      * Default config.
@@ -67,6 +73,7 @@ class GlideMiddleware
                 $this->config('scope', $server->getBaseUrl());
             }
         }
+        $this->eventManager(EventManager::instance());
     }
 
     /**
@@ -108,7 +115,14 @@ class GlideMiddleware
                 $modifiedTime = $server->getSource()
                     ->getTimestamp($server->getSourcePath($this->_path));
             } catch (\Exception $e) {
-                if ($config['ignoreException']) {
+                $event = new Event(Events::EXCEPTION_RAISED, $this, [
+                    'exception' => $e
+                ]);
+                $this->eventManager()->dispatch($event);
+                if ($config['ignoreException'] || $event->isIgnoreException()) {
+                    return $next($request, $response);
+                }
+                if ($response = $event->getResponse()) {
                     return $next($request, $response);
                 }
                 throw $e;
@@ -159,8 +173,15 @@ class GlideMiddleware
         try {
             $response = $server->getImageResponse($this->_path, $this->_params);
         } catch (\Exception $e) {
-            if ($this->config('ignoreException')) {
+            $event = new Event(Events::EXCEPTION_RAISED, $this, [
+                'exception' => $e
+            ]);
+            $this->eventManager()->dispatch($event);
+            if ($this->config('ignoreException') || $event->isIgnoreException()) {
                 return null;
+            }
+            if ($response = $event->getResponse()) {
+                return $response;
             }
             throw $e;
         }
