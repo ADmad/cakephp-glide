@@ -62,7 +62,7 @@ class GlideMiddleware implements EventDispatcherInterface
      * @param array $config Array of config.
      * @param \Cake\Event\EventManager|null $eventManager An event manager if you want to inject one.
      */
-    public function __construct($config = [], EventManager $eventManager = null)
+    public function __construct(array $config = [], EventManager $eventManager = null)
     {
         $this->setConfig($config);
 
