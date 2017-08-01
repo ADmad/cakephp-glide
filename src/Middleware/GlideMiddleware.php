@@ -62,7 +62,7 @@ class GlideMiddleware implements EventDispatcherInterface
      */
     public function __construct($config = [])
     {
-        $this->config($config);
+        $this->setConfig($config);
     }
 
     /**
@@ -80,7 +80,7 @@ class GlideMiddleware implements EventDispatcherInterface
         $this->_path = urldecode($uri->getPath());
         parse_str($uri->getQuery(), $this->_params);
 
-        $config = $this->config();
+        $config = $this->getConfig();
 
         $this->_checkSignature();
 
@@ -220,7 +220,7 @@ class GlideMiddleware implements EventDispatcherInterface
      */
     protected function _withCustomHeaders($response)
     {
-        foreach ((array)$this->config('headers') as $key => $value) {
+        foreach ((array)$this->getConfig('headers') as $key => $value) {
             $response = $response->withHeader($key, $value);
         }
 
