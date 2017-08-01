@@ -6,6 +6,7 @@ use ADmad\Glide\Events;
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherTrait;
+use Cake\Event\EventManager;
 use Cake\Utility\Security;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
@@ -72,6 +73,7 @@ class GlideMiddleware
                 $this->config('scope', $server->getBaseUrl());
             }
         }
+        $this->eventManager(EventManager::instance());
     }
 
     /**

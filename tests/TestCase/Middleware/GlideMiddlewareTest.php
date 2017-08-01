@@ -4,6 +4,7 @@ namespace ADmad\Glide\TestCase\Middleware;
 use ADmad\Glide\Event;
 use ADmad\Glide\Events;
 use ADmad\Glide\Middleware\GlideMiddleware;
+use Cake\Event\EventManager;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -48,6 +49,7 @@ class GlideMiddlewareTest extends TestCase
 
         exec('rm -rf ' . TMP . '/cache/cake-logo.png');
         clearstatcache(false, TMP . '/cache/cake-logo.png');
+        EventManager::instance()->off(Events::EXCEPTION_RAISED);
     }
 
     public function testNormalResponse()
