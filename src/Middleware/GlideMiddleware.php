@@ -1,13 +1,13 @@
 <?php
 namespace ADmad\Glide\Middleware;
 
+use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
-use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Utility\Security;
 use Exception;
@@ -138,7 +138,7 @@ class GlideMiddleware implements EventDispatcherInterface
     /**
      * Check signature token if secure URLs are enabled.
      *
-     * @throws \Cake\Network\Exception\BadRequestException
+     * @throws \ADmad\Glide\Exception\SignatureException
      *
      * @return void
      */
@@ -155,7 +155,7 @@ class GlideMiddleware implements EventDispatcherInterface
                 $this->_params
             );
         } catch (Exception $exception) {
-            throw new ForbiddenException($exception->getMessage(), null, $exception);
+            throw new SignatureException($exception->getMessage(), null, $exception);
         }
     }
 

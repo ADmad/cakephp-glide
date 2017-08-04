@@ -1,12 +1,12 @@
 <?php
 namespace ADmad\Glide\TestCase\Middleware;
 
+use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
-use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -108,7 +108,7 @@ class GlideMiddlewareTest extends TestCase
         $this->assertEquals('some-value', $response->getHeaders()['X-Custom'][0]);
     }
 
-    public function testForbiddenException()
+    public function testSignatureException()
     {
         $this->config['security']['secureUrls'] = true;
 
@@ -121,7 +121,7 @@ class GlideMiddlewareTest extends TestCase
 
         $middleware = new GlideMiddleware($this->config);
 
-        $this->expectException(ForbiddenException::class);
+        $this->expectException(SignatureException::class);
         $this->expectExceptionCode(403);
         $this->expectExceptionMessage('Signature is missing.');
         $middleware($request, $this->response, $this->next);
