@@ -145,7 +145,7 @@ class GlideMiddlewareTest extends TestCase
             'REQUEST_URI' => '/images/non-existent.jpg',
         ]);
 
-        EventManager::instance()->on(GlideMiddleware::FAILURE_EVENT, function ($event) {
+        EventManager::instance()->on(GlideMiddleware::RESPONSE_FAILURE_EVENT, function ($event) {
             return (new Response())
                 ->withFile(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png');
         });

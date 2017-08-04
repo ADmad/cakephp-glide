@@ -22,7 +22,7 @@ class GlideMiddleware implements EventDispatcherInterface
     use EventDispatcherTrait;
     use InstanceConfigTrait;
 
-    const FAILURE_EVENT = 'Glide.failure';
+    const RESPONSE_FAILURE_EVENT = 'Glide.response_failure';
 
     /**
      * Default config.
@@ -252,7 +252,7 @@ class GlideMiddleware implements EventDispatcherInterface
     protected function _handleException($request, $response, $exception)
     {
         $event = $this->dispatchEvent(
-            static::FAILURE_EVENT,
+            static::RESPONSE_FAILURE_EVENT,
             compact('request', 'response', 'exception')
         );
         $result = $event->getResult();
