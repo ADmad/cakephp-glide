@@ -1,6 +1,7 @@
 <?php
 namespace ADmad\Glide\Middleware;
 
+use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
@@ -8,7 +9,6 @@ use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
-use Cake\Network\Exception\NotFoundException;
 use Cake\Utility\Security;
 use Exception;
 use League\Glide\Server;
@@ -245,7 +245,7 @@ class GlideMiddleware implements EventDispatcherInterface
      * @param \Psr\Http\Message\ResponseInterface $response Response instance.
      * @param \Exception $exception Exception instance.
      *
-     * @throws \Cake\Network\Exception\NotFoundException
+     * @throws \ADmad\Glide\Exception\ResponseException
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -261,6 +261,6 @@ class GlideMiddleware implements EventDispatcherInterface
             return $result;
         }
 
-        throw new NotFoundException(null, null, $exception);
+        throw new ResponseException(null, null, $exception);
     }
 }

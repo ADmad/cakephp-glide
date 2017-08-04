@@ -1,13 +1,13 @@
 <?php
 namespace ADmad\Glide\TestCase\Middleware;
 
+use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
-use Cake\Network\Exception\NotFoundException;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use League\Glide\Signatures\Signature;
@@ -127,14 +127,14 @@ class GlideMiddlewareTest extends TestCase
         $middleware($request, $this->response, $this->next);
     }
 
-    public function testNotFoundException()
+    public function testResponseException()
     {
         $middleware = new GlideMiddleware($this->config);
         $request = ServerRequestFactory::fromGlobals([
             'REQUEST_URI' => '/images/non-existent.jpg',
         ]);
 
-        $this->expectException(NotFoundException::class);
+        $this->expectException(ResponseException::class);
         $middleware($request, $this->response, $this->next);
     }
 
