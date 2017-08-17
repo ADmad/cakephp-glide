@@ -54,6 +54,17 @@ class GlideMiddlewareTest extends TestCase
         $this->assertTrue(isset($headers['Content-Length']));
     }
 
+    public function testPathConfig()
+    {
+        $middleware = new GlideMiddleware(['path' => '/img'] + $this->config);
+        $response = $middleware($this->request, $this->response, $this->next);
+
+        $this->assertFalse(is_dir(TMP . '/cache/cake-logo.png'));
+
+        $headers = $response->getHeaders();
+        $this->assertFalse(isset($headers['Content-Length']));
+    }
+
     public function testSecureUrl()
     {
         $this->config['security']['secureUrls'] = true;

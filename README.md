@@ -41,7 +41,7 @@ Router::scope('/images', function ($routes) {
         // Setting this option is required only if you want to setup the middleware
         // in Application::middleware() instead of using router's scoped middleware.
         // It would normally be set to same value as that of server.base_url below.
-        'scope' => null,
+        'path' => null,
 
         // Either an instance of League\Glide\Server or config array to be used to
         // create server instance.

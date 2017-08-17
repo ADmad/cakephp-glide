@@ -30,7 +30,7 @@ class GlideMiddleware implements EventDispatcherInterface
      * @var array
      */
     protected $_defaultConfig = [
-        'scope' => null,
+        'path' => null,
         'cacheTime' => '+1 days',
         'server' => [
             'base_url' => '/images/',
@@ -89,7 +89,7 @@ class GlideMiddleware implements EventDispatcherInterface
 
         $config = $this->getConfig();
 
-        if ($config['scope'] && strpos($this->_path, $config['scope']) !== 0) {
+        if ($config['path'] && strpos($this->_path, $config['path']) !== 0) {
             return $next($request, $response);
         }
 
