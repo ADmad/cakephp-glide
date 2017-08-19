@@ -43,7 +43,5 @@
         "psr-4": {
             "ADmad\\Glide\\Test\\": "tests"
         }
-    },
-    "minimum-stability": "RC",
-    "prefer-stable": true
+    }
 }
