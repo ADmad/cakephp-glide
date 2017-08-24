@@ -106,7 +106,12 @@ class GlideMiddleware implements EventDispatcherInterface
                 $modifiedTime = $server->getSource()
                     ->getTimestamp($server->getSourcePath($this->_path));
             } catch (Exception $exception) {
-                return $this->_handleException($request, $response, $exception);
+                $response = $this->_handleException($request, $response, $exception);
+                if ($response === null) {
+                    return $next($request, $response);
+                }
+
+                return $response;
             }
 
             if ($this->_isNotModified($request, $modifiedTime)) {
@@ -247,7 +252,7 @@ class GlideMiddleware implements EventDispatcherInterface
      *
      * @throws \ADmad\Glide\Exception\ResponseException
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|null
      */
     protected function _handleException($request, $response, $exception)
     {
@@ -256,6 +261,10 @@ class GlideMiddleware implements EventDispatcherInterface
             compact('request', 'response', 'exception')
         );
         $result = $event->getResult();
+
+        if ($event->isStopped()) {
+            return null;
+        }
 
         if ($result instanceof ResponseInterface) {
             return $result;
