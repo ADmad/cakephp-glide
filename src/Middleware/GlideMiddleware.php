@@ -11,11 +11,10 @@ use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
-use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Stream;
 
 class GlideMiddleware implements EventDispatcherInterface
 {
@@ -41,6 +40,7 @@ class GlideMiddleware implements EventDispatcherInterface
             'signKey' => null,
         ],
         'headers' => null,
+        'originalPassThrough' => false,
     ];
 
     /**
@@ -175,6 +175,19 @@ class GlideMiddleware implements EventDispatcherInterface
      */
     protected function _getResponse($request, $response, $server)
     {
+        if ((empty($this->_params) ||
+            (count($this->_params) === 1 && isset($this->_params['s'])))
+            && $this->getConfig('originalPassThrough')
+        ) {
+            try {
+                $response = $this->_passThrough($request, $response, $server);
+            } catch (Exception $exception) {
+                return $this->_handleException($request, $response, $exception);
+            }
+
+            return $response;
+        }
+
         if ($server->getResponseFactory() === null) {
             $server->setResponseFactory(new PsrResponseFactory());
         }
@@ -186,6 +199,30 @@ class GlideMiddleware implements EventDispatcherInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Generate response using original image.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
+     * @param \Psr\Http\Message\ResponseInterface $response The response.
+     * @param \League\Glide\Server $server Glide server.
+     *
+     * @return \Psr\Http\Message\ResponseInterface Response instance
+     */
+    protected function _passThrough($request, $response, $server)
+    {
+        $source = $server->getSource();
+        $path = $server->getSourcePath($this->_path);
+
+        $stream = new Stream($source->readStream($path));
+
+        $contentType = $source->getMimetype($path);
+        $contentLength = $source->getSize($path);
+
+        return (new Response())->withBody($stream)
+            ->withHeader('Content-Type', $contentType)
+            ->withHeader('Content-Length', $contentLength);
     }
 
     /**

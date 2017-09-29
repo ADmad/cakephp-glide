@@ -6,7 +6,6 @@ use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
-use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -33,11 +32,6 @@ class GlideMiddlewareTest extends TestCase
         };
 
         Security::salt('salt');
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
 
         exec('rm -rf ' . TMP . '/cache/cake-logo.png');
         clearstatcache(false, TMP . '/cache/cake-logo.png');
@@ -52,6 +46,38 @@ class GlideMiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
         $this->assertTrue(isset($headers['Content-Length']));
+    }
+
+    public function testOriginalPassThrough()
+    {
+        $fileSize = filesize(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png');
+
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/cake-logo.png',
+        ]);
+
+        $middleware = new GlideMiddleware($this->config);
+        $response = $middleware($request, $this->response, $this->next);
+
+        $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
+
+        $headers = $response->getHeaders();
+        $this->assertNotSame(
+            $fileSize,
+            (int)$headers['Content-Length'][0],
+            'Content length shouldnt be same as original filesize since glide always generates new file.'
+        );
+
+        exec('rm -rf ' . TMP . '/cache/cake-logo.png');
+        clearstatcache(false, TMP . '/cache/cake-logo.png');
+
+        $middleware = new GlideMiddleware($this->config + ['originalPassThrough' => true]);
+        $response = $middleware($request, $this->response, $this->next);
+
+        $this->assertFalse(is_dir(TMP . '/cache/cake-logo.png'));
+
+        $headers = $response->getHeaders();
+        $this->assertSame($fileSize, (int)$headers['Content-Length'][0]);
     }
 
     public function testPathConfig()
