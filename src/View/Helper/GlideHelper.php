@@ -106,7 +106,7 @@ class GlideHelper extends Helper
 
             $this->_urlBuilder = UrlBuilderFactory::create(
                 $config['baseUrl'],
-                $config['secureUrls'] ? ($config['signKey'] ?: Security::salt()) : null
+                $config['secureUrls'] ? ($config['signKey'] ?: Security::getSalt()) : null
             );
         }
 

@@ -156,7 +156,7 @@ class GlideMiddleware implements EventDispatcherInterface
             return;
         }
 
-        $signKey = $this->getConfig('security.signKey') ?: Security::salt();
+        $signKey = $this->getConfig('security.signKey') ?: Security::getSalt();
         try {
             SignatureFactory::create($signKey)->validateRequest(
                 $this->_path,
