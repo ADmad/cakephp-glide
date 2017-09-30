@@ -99,24 +99,14 @@ class GlideMiddleware implements EventDispatcherInterface
 
         $modifiedTime = null;
         if ($config['cacheTime']) {
-            try {
-                $modifiedTime = $server->getSource()
-                    ->getTimestamp($server->getSourcePath($this->_path));
-            } catch (Exception $exception) {
-                $response = $this->_handleException($request, $response, $exception);
-                if ($response === null) {
-                    return $next($request, $response);
-                }
-
-                return $response;
+            $return = $this->_checkModified($request, $response, $server);
+            if ($return === null) {
+                return $next($request, $response);
             }
-
-            if ($this->_isNotModified($request, $modifiedTime)) {
-                $response = new Response(['status' => 304]);
-                $response = $this->_withCustomHeaders($response);
-
-                return $response->withHeader('Last-Modified', (string)$modifiedTime);
+            if ($return instanceof ResponseInterface) {
+                return $return;
             }
+            $modifiedTime = $return;
         }
 
         $response = $this->_getResponse($request, $response, $server);
@@ -175,6 +165,39 @@ class GlideMiddleware implements EventDispatcherInterface
         } catch (Exception $exception) {
             throw new SignatureException($exception->getMessage(), null, $exception);
         }
+    }
+
+    /**
+     * Get file's modified time.
+     *
+     * After comparing with "If-Modified-Since" either return modified time or
+     * response with 304 Not Modified status.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
+     * @param \Psr\Http\Message\ResponseInterface $response The response.
+     * @param \League\Glide\Server $server Glide server.
+     *
+     * @return \Psr\Http\Message\ResponseInterface|int|null
+     */
+    protected function _checkModified($request, $response, $server)
+    {
+        $modifiedTime = null;
+
+        try {
+            $modifiedTime = $server->getSource()
+                ->getTimestamp($server->getSourcePath($this->_path));
+        } catch (Exception $exception) {
+            return $this->_handleException($request, $response, $exception);
+        }
+
+        if ($this->_isNotModified($request, $modifiedTime)) {
+            $response = new Response(['status' => 304]);
+            $response = $this->_withCustomHeaders($response);
+
+            return $response->withHeader('Last-Modified', (string)$modifiedTime);
+        }
+
+        return $modifiedTime;
     }
 
     /**
@@ -239,7 +262,7 @@ class GlideMiddleware implements EventDispatcherInterface
     }
 
     /**
-     * Check the not modified header.
+     * Compare file's modfied time with "If-Modified-Since" header.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request to check.
      * @param string|int $modifiedTime Last modified time of file.

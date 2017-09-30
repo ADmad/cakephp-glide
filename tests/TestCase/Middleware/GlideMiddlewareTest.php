@@ -139,7 +139,7 @@ class GlideMiddlewareTest extends TestCase
 
         $request = ServerRequestFactory::fromGlobals([
             'REQUEST_URI' => '/images/cake-logo.png?w=100',
-            'HTTP_IF_MODIFIED_SINCE' => $headers['Last-Modified'],
+            'HTTP_IF_MODIFIED_SINCE' => $headers['Last-Modified'][0],
         ]);
 
         $middleware = new GlideMiddleware($this->config);
