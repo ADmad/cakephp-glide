@@ -43,8 +43,8 @@ Router::scope('/images', function ($routes) {
         // It would normally be set to same value as that of server.base_url below.
         'path' => null,
 
-        // Either an instance of League\Glide\Server or config array to be used to
-        // create server instance.
+        // Either a callable which returns an instance of League\Glide\Server
+        // or config array to be used to create server instance.
         // http://glide.thephpleague.com/1.0/config/setup/
         'server' => [
             // Path or League\Flysystem adapter instance to read images from.

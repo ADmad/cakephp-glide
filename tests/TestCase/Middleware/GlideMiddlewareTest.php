@@ -9,6 +9,7 @@ use Cake\Http\Response;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
+use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
 use Zend\Diactoros\Stream;
 
@@ -19,7 +20,7 @@ class GlideMiddlewareTest extends TestCase
         $this->config = [
             'server' => [
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
-                'cache' => TMP . '/cache',
+                'cache' => TMP . 'cache',
             ],
         ];
 
@@ -33,8 +34,8 @@ class GlideMiddlewareTest extends TestCase
 
         Security::salt('salt');
 
-        exec('rm -rf ' . TMP . '/cache/cake-logo.png');
-        clearstatcache(false, TMP . '/cache/cake-logo.png');
+        exec('rm -rf ' . TMP . 'cache/cake-logo.png');
+        clearstatcache(false, TMP . 'cache/cake-logo.png');
     }
 
     public function testNormalResponse()
@@ -42,10 +43,25 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware($this->request, $this->response, $this->next);
 
-        $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
+        $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
         $headers = $response->getHeaders();
         $this->assertTrue(isset($headers['Content-Length']));
+    }
+
+    public function testServerCallable()
+    {
+        $config = $this->config;
+        $config['server'] = function () {
+            return ServerFactory::create(
+                $this->config['server'] + ['base_url' => '/images']
+            );
+        };
+
+        $middleware = new GlideMiddleware($config);
+        $response = $middleware($this->request, $this->response, $this->next);
+
+        $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
     }
 
     public function testOriginalPassThrough()
@@ -59,7 +75,7 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware($request, $this->response, $this->next);
 
-        $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
+        $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
         $headers = $response->getHeaders();
         $this->assertNotSame(
@@ -68,13 +84,13 @@ class GlideMiddlewareTest extends TestCase
             'Content length shouldnt be same as original filesize since glide always generates new file.'
         );
 
-        exec('rm -rf ' . TMP . '/cache/cake-logo.png');
-        clearstatcache(false, TMP . '/cache/cake-logo.png');
+        exec('rm -rf ' . TMP . 'cache/cake-logo.png');
+        clearstatcache(false, TMP . 'cache/cake-logo.png');
 
         $middleware = new GlideMiddleware($this->config + ['originalPassThrough' => true]);
         $response = $middleware($request, $this->response, $this->next);
 
-        $this->assertFalse(is_dir(TMP . '/cache/cake-logo.png'));
+        $this->assertFalse(is_dir(TMP . 'cache/cake-logo.png'));
 
         $headers = $response->getHeaders();
         $this->assertSame($fileSize, (int)$headers['Content-Length'][0]);
@@ -85,7 +101,7 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware(['path' => '/img'] + $this->config);
         $response = $middleware($this->request, $this->response, $this->next);
 
-        $this->assertFalse(is_dir(TMP . '/cache/cake-logo.png'));
+        $this->assertFalse(is_dir(TMP . 'cache/cake-logo.png'));
 
         $headers = $response->getHeaders();
         $this->assertFalse(isset($headers['Content-Length']));
@@ -106,7 +122,7 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware($request, $this->response, $this->next);
 
-        $this->assertTrue(is_dir(TMP . '/cache/cake logo.png'));
+        $this->assertTrue(is_dir(TMP . 'cache/cake logo.png'));
     }
 
     public function testCache()
@@ -114,7 +130,7 @@ class GlideMiddlewareTest extends TestCase
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware($this->request, $this->response, $this->next);
 
-        $this->assertTrue(is_dir(TMP . '/cache/cake-logo.png'));
+        $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
         $headers = $response->getHeaders();
         $this->assertTrue($response->getBody() instanceof Stream);

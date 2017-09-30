@@ -95,10 +95,7 @@ class GlideMiddleware implements EventDispatcherInterface
 
         $this->_checkSignature();
 
-        $server = $config['server'];
-        if (is_array($server)) {
-            $server = ServerFactory::create($server);
-        }
+        $server = $this->_getServer($config['server']);
 
         $modifiedTime = null;
         if ($config['cacheTime']) {
@@ -138,6 +135,22 @@ class GlideMiddleware implements EventDispatcherInterface
         $response = $this->_withCustomHeaders($response);
 
         return $response;
+    }
+
+    /**
+     * Get glide server instance.
+     *
+     * @param array|callable $config Config array or callable.
+     *
+     * @return \League\Glide\Server
+     */
+    protected function _getServer($config)
+    {
+        if (is_array($config)) {
+            return ServerFactory::create($config);
+        }
+
+        return $config();
     }
 
     /**
