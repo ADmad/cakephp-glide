@@ -1,10 +1,10 @@
 <?php
 namespace ADmad\Glide\Responses;
 
+use Cake\Http\Response;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Filesystem\FilesystemException;
 use League\Glide\Responses\ResponseFactoryInterface;
-use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 
 class PsrResponseFactory implements ResponseFactoryInterface
@@ -22,7 +22,7 @@ class PsrResponseFactory implements ResponseFactoryInterface
         $stream = new Stream($cache->readStream($path));
 
         $contentType = $cache->getMimetype($path);
-        $contentLength = (string)$cache->getSize($path);
+        $contentLength = $cache->getSize($path);
 
         if ($contentType === false) {
             throw new FilesystemException('Unable to determine the image content type.');
