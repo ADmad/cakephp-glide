@@ -32,7 +32,7 @@ class GlideMiddlewareTest extends TestCase
             return $res;
         };
 
-        Security::salt('salt');
+        Security::setSalt('salt');
 
         exec('rm -rf ' . TMP . 'cache/cake-logo.png');
         clearstatcache(false, TMP . 'cache/cake-logo.png');
@@ -111,7 +111,7 @@ class GlideMiddlewareTest extends TestCase
     {
         $this->config['security']['secureUrls'] = true;
 
-        $signature = new Signature(Security::salt());
+        $signature = new Signature(Security::getSalt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
         $request = ServerRequestFactory::fromGlobals([
@@ -165,7 +165,7 @@ class GlideMiddlewareTest extends TestCase
     {
         $this->config['security']['secureUrls'] = true;
 
-        $signature = new Signature(Security::salt());
+        $signature = new Signature(Security::getSalt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
         $request = ServerRequestFactory::fromGlobals([

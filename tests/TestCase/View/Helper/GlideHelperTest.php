@@ -2,7 +2,7 @@
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
-use Cake\Network\Request;
+use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use Cake\View\View;
@@ -11,12 +11,12 @@ class GlideHelperTest extends TestCase
 {
     public function setUp()
     {
-        $this->request = new Request();
-        $this->request->webroot = '/';
+        $this->request = new ServerRequest();
+        $this->request = $this->request->withAttribute('webroot', '/');
         $this->view = new View($this->request);
         $this->helper = new GlideHelper($this->view, ['baseUrl' => '/images/']);
 
-        Security::salt('salt');
+        Security::setSalt('salt');
     }
 
     public function testUrl()
@@ -24,7 +24,7 @@ class GlideHelperTest extends TestCase
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/images/logo.png?w=100', $result);
 
-        $this->helper->request->webroot = '/subfolder/';
+        $this->helper->request = $this->helper->request->withAttribute('webroot', '/subfolder/');
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/subfolder/images/logo.png?w=100', $result);
 
@@ -47,7 +47,8 @@ class GlideHelperTest extends TestCase
             ],
         ], $result);
 
-        $this->helper->request->webroot = '/subfolder/';
+        $this->helper->Html->Url->request = $this->helper->Html->Url->request
+            ->withAttribute('webroot', '/subfolder/');
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
         $this->assertHtml([
             'img' => [

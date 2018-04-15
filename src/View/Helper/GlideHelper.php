@@ -81,7 +81,7 @@ class GlideHelper extends Helper
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
         if ($base && strpos($url, 'http') !== 0) {
-            $url = $this->request->webroot . ltrim($url, '/');
+            $url = $this->request->getAttribute('webroot') . ltrim($url, '/');
         }
 
         return $url;
@@ -102,7 +102,7 @@ class GlideHelper extends Helper
         }
 
         if (!isset($this->_urlBuilder)) {
-            $config = $this->_config;
+            $config = $this->getConfig();
 
             $this->_urlBuilder = UrlBuilderFactory::create(
                 $config['baseUrl'],
