@@ -100,7 +100,7 @@ class GlideMiddleware implements EventDispatcherInterface
         $modifiedTime = null;
         if ($config['cacheTime']) {
             $return = $this->_checkModified($request, $response, $server);
-            if ($return === null) {
+            if ($return === false) {
                 return $next($request, $response);
             }
             if ($return instanceof ResponseInterface) {
@@ -177,17 +177,22 @@ class GlideMiddleware implements EventDispatcherInterface
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param \League\Glide\Server $server Glide server.
      *
-     * @return \Psr\Http\Message\ResponseInterface|int|null
+     * @return \Psr\Http\Message\ResponseInterface|int|false
      */
     protected function _checkModified($request, $response, $server)
     {
-        $modifiedTime = null;
+        $modifiedTime = false;
 
         try {
+            /** @var int|string|false $modifiedTime */
             $modifiedTime = $server->getSource()
                 ->getTimestamp($server->getSourcePath($this->_path));
         } catch (Exception $exception) {
             return $this->_handleException($request, $response, $exception);
+        }
+
+        if ($modifiedTime === false) {
+            return $modifiedTime;
         }
 
         if ($this->_isNotModified($request, $modifiedTime)) {
@@ -197,7 +202,7 @@ class GlideMiddleware implements EventDispatcherInterface
             return $response->withHeader('Last-Modified', (string)$modifiedTime);
         }
 
-        return $modifiedTime;
+        return (int)$modifiedTime;
     }
 
     /**
@@ -224,7 +229,9 @@ class GlideMiddleware implements EventDispatcherInterface
             return $response;
         }
 
-        if ($server->getResponseFactory() === null) {
+        /** @var \League\Glide\Responses\ResponseFactoryInterface|null */
+        $responseFactory = $server->getResponseFactory();
+        if ($responseFactory === null) {
             $server->setResponseFactory(new PsrResponseFactory());
         }
 
@@ -251,7 +258,11 @@ class GlideMiddleware implements EventDispatcherInterface
         $source = $server->getSource();
         $path = $server->getSourcePath($this->_path);
 
-        $stream = new Stream($source->readStream($path));
+        $resource = $source->readStream($path);
+        if ($resource === false) {
+            throw new ResponseException();
+        }
+        $stream = new Stream($resource);
 
         $contentType = $source->getMimetype($path);
         $contentLength = $source->getSize($path);
