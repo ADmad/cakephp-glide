@@ -1,6 +1,7 @@
 <?php
 namespace ADmad\Glide\Responses;
 
+use ADmad\Glide\Exception\ResponseException;
 use Cake\Http\Response;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Filesystem\FilesystemException;
@@ -19,7 +20,11 @@ class PsrResponseFactory implements ResponseFactoryInterface
      */
     public function create(FilesystemInterface $cache, $path)
     {
-        $stream = new Stream($cache->readStream($path));
+        $resource = $cache->readStream($path);
+        if ($resource === false) {
+            throw new ResponseException();
+        }
+        $stream = new Stream($resource);
 
         $contentType = $cache->getMimetype($path);
         $contentLength = $cache->getSize($path);
