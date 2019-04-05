@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
@@ -11,7 +12,6 @@ class GlideHelperTest extends TestCase
 {
     public function setUp()
     {
-
         $this->request = new ServerRequest();
         $this->request = $this->request->withAttribute('webroot', '/');
         $this->view = new View($this->request);

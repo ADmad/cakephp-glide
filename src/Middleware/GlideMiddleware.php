@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace ADmad\Glide\Middleware;
 
 use ADmad\Glide\Exception\ResponseException;
@@ -24,7 +25,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     use EventDispatcherTrait;
     use InstanceConfigTrait;
 
-    const RESPONSE_FAILURE_EVENT = 'Glide.response_failure';
+    public const RESPONSE_FAILURE_EVENT = 'Glide.response_failure';
 
     /**
      * Default config.
@@ -66,7 +67,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param array $config Array of config.
      * @param \Cake\Event\EventManager|null $eventManager An event manager if you want to inject one.
      */
-    public function __construct(array $config = [], EventManager $eventManager = null)
+    public function __construct(array $config = [], ?EventManager $eventManager = null)
     {
         $this->setConfig($config);
 

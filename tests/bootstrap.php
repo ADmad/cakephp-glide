@@ -1,6 +1,5 @@
 <?php
-use Cake\Core\Plugin;
-
+declare(strict_types=1);
 /*
  * Test suite bootstrap
  *

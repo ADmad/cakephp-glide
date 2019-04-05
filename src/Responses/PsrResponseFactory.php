@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace ADmad\Glide\Responses;
 
 use ADmad\Glide\Exception\ResponseException;
