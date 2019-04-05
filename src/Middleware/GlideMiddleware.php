@@ -8,10 +8,11 @@ use ADmad\Glide\Responses\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
-use Cake\Event\EventManager;
+use Cake\Event\EventManagerInterface;
 use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
+use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use Psr\Http\Message\ResponseInterface;
@@ -65,9 +66,9 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * Constructor.
      *
      * @param array $config Array of config.
-     * @param \Cake\Event\EventManager|null $eventManager An event manager if you want to inject one.
+     * @param \Cake\Event\EventManagerInterface|null $eventManager An event manager if you want to inject one.
      */
-    public function __construct(array $config = [], ?EventManager $eventManager = null)
+    public function __construct(array $config = [], ?EventManagerInterface $eventManager = null)
     {
         $this->setConfig($config);
 
@@ -103,7 +104,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         $modifiedTime = null;
         if ($config['cacheTime']) {
             $return = $this->_checkModified($request, $server);
-            if ($return === false) {
+            if ($return === null) {
                 return $handler->handle($request);
             }
             if ($return instanceof ResponseInterface) {
@@ -118,6 +119,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         }
 
         if ($config['cacheTime']) {
+            /** @psalm-suppress PossiblyNullArgument */
             $response = $this->_withCacheHeaders(
                 $response,
                 $config['cacheTime'],
@@ -137,7 +139,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return \League\Glide\Server
      */
-    protected function _getServer($config)
+    protected function _getServer($config): Server
     {
         if (is_array($config)) {
             return ServerFactory::create($config);
@@ -179,9 +181,9 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \League\Glide\Server $server Glide server.
      *
-     * @return \Psr\Http\Message\ResponseInterface|int|false
+     * @return \Psr\Http\Message\ResponseInterface|int|null
      */
-    protected function _checkModified($request, $server)
+    protected function _checkModified(ServerRequestInterface $request, Server $server)
     {
         $modifiedTime = false;
 
@@ -194,7 +196,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         }
 
         if ($modifiedTime === false) {
-            return $modifiedTime;
+            return null;
         }
 
         if ($this->_isNotModified($request, $modifiedTime)) {
@@ -215,10 +217,11 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return \Psr\Http\Message\ResponseInterface|null Response instance on success else null
      */
-    protected function _getResponse($request, $server)
+    protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
-        if ((empty($this->_params) ||
-            (count($this->_params) === 1 && isset($this->_params['s'])))
+        if ((empty($this->_params)
+                || (count($this->_params) === 1 && isset($this->_params['s']))
+            )
             && $this->getConfig('originalPassThrough')
         ) {
             try {
@@ -250,10 +253,12 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \League\Glide\Server $server Glide server.
+
+     * @throws \ADmad\Glide\Exception\ResponseException
      *
      * @return \Psr\Http\Message\ResponseInterface Response instance
      */
-    protected function _passThrough($request, $server)
+    protected function _passThrough(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
         $source = $server->getSource();
         $path = $server->getSourcePath($this->_path);
@@ -267,9 +272,10 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         $contentType = $source->getMimetype($path);
         $contentLength = $source->getSize($path);
 
+        /** @psalm-suppress PossiblyFalseArgument */
         return (new Response())->withBody($stream)
             ->withHeader('Content-Type', $contentType)
-            ->withHeader('Content-Length', $contentLength);
+            ->withHeader('Content-Length', (string)$contentLength);
     }
 
     /**
@@ -280,7 +286,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return bool
      */
-    protected function _isNotModified($request, $modifiedTime)
+    protected function _isNotModified(ServerRequestInterface $request, $modifiedTime)
     {
         $modifiedSince = $request->getHeaderLine('If-Modified-Since');
         if (!$modifiedSince) {
@@ -299,7 +305,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function _withCacheHeaders($response, $cacheTime, $modifiedTime)
+    protected function _withCacheHeaders(ResponseInterface $response, string $cacheTime, $modifiedTime)
     {
         $expire = strtotime($cacheTime);
         $maxAge = $expire - time();
@@ -318,7 +324,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function _withCustomHeaders($response)
+    protected function _withCustomHeaders(ResponseInterface $response)
     {
         foreach ((array)$this->getConfig('headers') as $key => $value) {
             $response = $response->withHeader($key, $value);
@@ -337,7 +343,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @return \Psr\Http\Message\ResponseInterface|null
      */
-    protected function _handleException($request, $exception)
+    protected function _handleException(ServerRequestInterface $request, $exception): ?ResponseInterface
     {
         $event = $this->dispatchEvent(
             static::RESPONSE_FAILURE_EVENT,

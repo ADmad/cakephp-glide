@@ -4,6 +4,7 @@ namespace ADmad\Glide\View\Helper;
 
 use Cake\Utility\Security;
 use Cake\View\Helper;
+use League\Glide\Urls\UrlBuilder;
 use League\Glide\Urls\UrlBuilderFactory;
 
 /**
@@ -18,7 +19,7 @@ class GlideHelper extends Helper
      *
      * @var array
      */
-    public $helpers = ['Html'];
+    protected $helpers = ['Html'];
 
     /**
      * Default config for this helper.
@@ -55,7 +56,7 @@ class GlideHelper extends Helper
      *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
-    public function image($path, array $params = [], array $options = [])
+    public function image(string $path, array $params = [], array $options = []): string
     {
         return $this->Html->image(
             $this->url($path, $params + ['_base' => false]),
@@ -73,7 +74,7 @@ class GlideHelper extends Helper
      *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
-    public function url($path, array $params = [])
+    public function url(string $path, array $params = []): string
     {
         $base = true;
         if (isset($params['_base'])) {
@@ -96,7 +97,7 @@ class GlideHelper extends Helper
      *
      * @return \League\Glide\Urls\UrlBuilder URL builder instance.
      */
-    public function urlBuilder($urlBuilder = null)
+    public function urlBuilder(?UrlBuilder $urlBuilder = null): UrlBuilder
     {
         if ($urlBuilder !== null) {
             return $this->_urlBuilder = $urlBuilder;
