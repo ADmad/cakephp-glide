@@ -14,9 +14,12 @@ use Exception;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Stream;
 
-class GlideMiddleware implements EventDispatcherInterface
+class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 {
     use EventDispatcherTrait;
     use InstanceConfigTrait;
@@ -76,12 +79,11 @@ class GlideMiddleware implements EventDispatcherInterface
      * Return response with image data.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
-     * @param callable $next Callback to invoke the next middleware.
+     * @param \Psr\Http\Server\RequestHandlerInterface $handler The request handler.
      *
-     * @return \Psr\Http\Message\ResponseInterface A response
+     * @return \Psr\Http\Message\ResponseInterface A response.
      */
-    public function __invoke($request, $response, $next)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri();
         $this->_path = urldecode($uri->getPath());
@@ -90,7 +92,7 @@ class GlideMiddleware implements EventDispatcherInterface
         $config = $this->getConfig();
 
         if ($config['path'] && strpos($this->_path, $config['path']) !== 0) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         $this->_checkSignature();
@@ -99,9 +101,9 @@ class GlideMiddleware implements EventDispatcherInterface
 
         $modifiedTime = null;
         if ($config['cacheTime']) {
-            $return = $this->_checkModified($request, $response, $server);
+            $return = $this->_checkModified($request, $server);
             if ($return === false) {
-                return $next($request, $response);
+                return $handler->handle($request);
             }
             if ($return instanceof ResponseInterface) {
                 return $return;
@@ -109,9 +111,9 @@ class GlideMiddleware implements EventDispatcherInterface
             $modifiedTime = $return;
         }
 
-        $response = $this->_getResponse($request, $response, $server);
+        $response = $this->_getResponse($request, $server);
         if ($response === null) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         if ($config['cacheTime']) {
@@ -174,12 +176,11 @@ class GlideMiddleware implements EventDispatcherInterface
      * response with 304 Not Modified status.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param \League\Glide\Server $server Glide server.
      *
      * @return \Psr\Http\Message\ResponseInterface|int|false
      */
-    protected function _checkModified($request, $response, $server)
+    protected function _checkModified($request, $server)
     {
         $modifiedTime = false;
 
@@ -188,7 +189,7 @@ class GlideMiddleware implements EventDispatcherInterface
             $modifiedTime = $server->getSource()
                 ->getTimestamp($server->getSourcePath($this->_path));
         } catch (Exception $exception) {
-            return $this->_handleException($request, $response, $exception);
+            return $this->_handleException($request, $exception);
         }
 
         if ($modifiedTime === false) {
@@ -209,21 +210,20 @@ class GlideMiddleware implements EventDispatcherInterface
      * Get response instance which contains image to render.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param \League\Glide\Server $server Glide server.
      *
      * @return \Psr\Http\Message\ResponseInterface|null Response instance on success else null
      */
-    protected function _getResponse($request, $response, $server)
+    protected function _getResponse($request, $server)
     {
         if ((empty($this->_params) ||
             (count($this->_params) === 1 && isset($this->_params['s'])))
             && $this->getConfig('originalPassThrough')
         ) {
             try {
-                $response = $this->_passThrough($request, $response, $server);
+                $response = $this->_passThrough($request, $server);
             } catch (Exception $exception) {
-                return $this->_handleException($request, $response, $exception);
+                return $this->_handleException($request, $exception);
             }
 
             return $response;
@@ -238,7 +238,7 @@ class GlideMiddleware implements EventDispatcherInterface
         try {
             $response = $server->getImageResponse($this->_path, $this->_params);
         } catch (Exception $exception) {
-            return $this->_handleException($request, $response, $exception);
+            return $this->_handleException($request, $exception);
         }
 
         return $response;
@@ -248,12 +248,11 @@ class GlideMiddleware implements EventDispatcherInterface
      * Generate response using original image.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param \League\Glide\Server $server Glide server.
      *
      * @return \Psr\Http\Message\ResponseInterface Response instance
      */
-    protected function _passThrough($request, $response, $server)
+    protected function _passThrough($request, $server)
     {
         $source = $server->getSource();
         $path = $server->getSourcePath($this->_path);
@@ -331,18 +330,17 @@ class GlideMiddleware implements EventDispatcherInterface
      * Handle exception.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request Request instance.
-     * @param \Psr\Http\Message\ResponseInterface $response Response instance.
      * @param \Exception $exception Exception instance.
      *
      * @throws \ADmad\Glide\Exception\ResponseException
      *
      * @return \Psr\Http\Message\ResponseInterface|null
      */
-    protected function _handleException($request, $response, $exception)
+    protected function _handleException($request, $exception)
     {
         $event = $this->dispatchEvent(
             static::RESPONSE_FAILURE_EVENT,
-            compact('request', 'response', 'exception')
+            compact('request', 'exception')
         );
         $result = $event->getResult();
 
