@@ -5,13 +5,9 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/ADmad/cakephp-glide.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-glide)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.txt)
 
-CakePHP 3.x plugin to help using [Glide](http://glide.thephpleague.com/) image manipulation library.
+CakePHP plugin to help using [Glide](http://glide.thephpleague.com/) image manipulation library.
 
 The plugin consists of a middlware, view helper and a Glide response class.
-
-## Requirements
-
-* CakePHP 3.5+ (For 3.4 and below use 2.x, for 3.2 and below use 1.x)
 
 ## Installation
 
@@ -21,10 +17,10 @@ Install the plugin through composer:
 composer require admad/cakephp-glide
 ```
 
-Load the plugin in `config/bootstrap.php`:
+Load the plugin using CLI:
 
-```
-Plugin::load('ADmad/Glide');
+```sh
+bin/cake plugin load ADmad/Glide
 ```
 
 ## Usage
@@ -152,7 +148,7 @@ Here are the available methods of `GlideHelper`:
      *   See `$options` argument of `Cake\View\HtmlHelper::image()`.
      * @return string Complete <img> tag.
      */
-    GlideHelper::image($path, array $params = [], array $options = [])
+    GlideHelper::image(string $path, array $params = [], array $options = []): string
 
     /**
      * URL with query string based on resizing params.
@@ -161,7 +157,7 @@ Here are the available methods of `GlideHelper`:
      * @param array $params Image manipulation parameters.
      * @return string Image URL.
      */
-    GlideHelper::url($path, array $params = [])
+    GlideHelper::url(string $path, array $params = []): string
 ```
 
 The main benefit of using this helper is depending on the value of `secureUrls`
