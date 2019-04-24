@@ -32,7 +32,6 @@
         "league/glide": "^1.4"
     },
     "require-dev": {
-        "cakephp/chronos": "^1.1",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {
@@ -45,5 +44,7 @@
             "ADmad\\Glide\\Test\\": "tests",
             "TestApp\\": "tests/test_app/src"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
