@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace ADmad\Glide\Middleware;
 
 use ADmad\Glide\Exception\ResponseException;
@@ -233,7 +234,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             return $response;
         }
 
-        /** @var \League\Glide\Responses\ResponseFactoryInterface|null */
+        /** @var \League\Glide\Responses\ResponseFactoryInterface|null $responseFactory */
         $responseFactory = $server->getResponseFactory();
         if ($responseFactory === null) {
             $server->setResponseFactory(new PsrResponseFactory());

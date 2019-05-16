@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace ADmad\Glide\View\Helper;
 
 use Cake\Utility\Security;
