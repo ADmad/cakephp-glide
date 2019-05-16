@@ -10,7 +10,7 @@ use Cake\View\View;
 
 class GlideHelperTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->request = new ServerRequest();
         $this->request = $this->request->withAttribute('webroot', '/');
@@ -36,7 +36,7 @@ class GlideHelperTest extends TestCase
             'secureUrls' => true,
         ]);
         $result = $helper->url('logo.png', ['w' => 100]);
-        $this->assertContains('&s=', $result);
+        $this->assertStringContainsString('&s=', $result);
     }
 
     public function testImage()
