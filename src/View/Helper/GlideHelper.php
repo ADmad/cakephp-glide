@@ -81,7 +81,11 @@ class GlideHelper extends Helper
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
         if ($base && strpos($url, 'http') !== 0) {
-            $url = $this->request->getAttribute('webroot') . ltrim($url, '/');
+            if (method_exists($this->getView(), 'getRequest')) {
+                $url = $this->getView()->getRequest()->getAttribute('webroot') . ltrim($url, '/');
+            } else {
+                $url = $this->request->getAttribute('webroot') . ltrim($url, '/');
+            }
         }
 
         return $url;
