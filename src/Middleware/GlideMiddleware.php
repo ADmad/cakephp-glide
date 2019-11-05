@@ -11,6 +11,7 @@ use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
+use League\Glide\Filesystem\FilesystemException;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use Psr\Http\Message\ResponseInterface;
@@ -267,9 +268,16 @@ class GlideMiddleware implements EventDispatcherInterface
         $contentType = $source->getMimetype($path);
         $contentLength = $source->getSize($path);
 
+        if ($contentType === false) {
+            throw new FilesystemException('Unable to determine the image content type.');
+        }
+        if ($contentLength === false) {
+            throw new FilesystemException('Unable to determine the image content length.');
+        }
+
         return (new Response())->withBody($stream)
             ->withHeader('Content-Type', $contentType)
-            ->withHeader('Content-Length', $contentLength);
+            ->withHeader('Content-Length', (string)$contentLength);
     }
 
     /**
@@ -301,6 +309,7 @@ class GlideMiddleware implements EventDispatcherInterface
      */
     protected function _withCacheHeaders($response, $cacheTime, $modifiedTime)
     {
+        /** @var int $expire */
         $expire = strtotime($cacheTime);
         $maxAge = $expire - time();
 

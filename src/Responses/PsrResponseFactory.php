@@ -39,6 +39,6 @@ class PsrResponseFactory implements ResponseFactoryInterface
 
         return (new Response())->withBody($stream)
             ->withHeader('Content-Type', $contentType)
-            ->withHeader('Content-Length', $contentLength);
+            ->withHeader('Content-Length', (string)$contentLength);
     }
 }
