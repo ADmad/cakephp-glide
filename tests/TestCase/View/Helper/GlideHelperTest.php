@@ -29,6 +29,7 @@ class GlideHelperTest extends TestCase
         } else {
             $this->helper->request = $this->helper->request->withAttribute('webroot', '/subfolder/');
         }
+        $this->helper->initialize([]);
 
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/subfolder/images/logo.png?w=100', $result);

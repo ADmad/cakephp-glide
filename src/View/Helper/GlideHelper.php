@@ -44,6 +44,28 @@ class GlideHelper extends Helper
     protected $_urlBuilder;
 
     /**
+     * Webroot.
+     *
+     * @var bool
+     */
+    protected $_webroot;
+
+    /**
+     * Initialize hook
+     *
+     * @param array $config Config
+     * @return void
+     */
+    public function initialize(array $config)
+    {
+        if (method_exists($this->_View, 'getRequest')) {
+            $this->_webroot = $this->_View->getRequest()->getAttribute('webroot');
+        } else {
+            $this->_webroot = $this->request->getAttribute('webroot');
+        }
+    }
+
+    /**
      * Creates a formatted IMG element.
      *
      * @param string $path Image path.
@@ -81,11 +103,7 @@ class GlideHelper extends Helper
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
         if ($base && strpos($url, 'http') !== 0) {
-            if (method_exists($this->getView(), 'getRequest')) {
-                $url = $this->getView()->getRequest()->getAttribute('webroot') . ltrim($url, '/');
-            } else {
-                $url = $this->request->getAttribute('webroot') . ltrim($url, '/');
-            }
+            $url = $this->_webroot . ltrim($url, '/');
         }
 
         return $url;
