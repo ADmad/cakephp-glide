@@ -3,6 +3,7 @@ language: php
 php:
   - 7.2
   - 7.3
+  - 7.4
 
 env:
   global:
@@ -27,7 +28,7 @@ before_script:
   - if [[ $PREFER_LOWEST != 1 ]]; then composer update --no-interaction; fi
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --no-interaction --prefer-lowest --prefer-stable; fi
 
-  - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:dev-next; fi
+  - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:^4.0; fi
 
 script:
   - |
@@ -40,7 +41,7 @@ script:
 
   - if [[ $PHPCS = 1 ]]; then vendor/bin/phpcs -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests; fi
 
-  - if [[ $STATIC_ANALYSIS = 1 ]]; then composer require --dev vimeo/psalm:^3.2 && vendor/bin/psalm src; fi
+  - if [[ $STATIC_ANALYSIS = 1 ]]; then composer require --dev vimeo/psalm:^3.7 && vendor/bin/psalm src; fi
 
 after_success:
   - |
