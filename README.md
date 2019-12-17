@@ -162,4 +162,4 @@ Here are the available methods of `GlideHelper`:
 
 The main benefit of using this helper is depending on the value of `secureUrls`
 config, the generated URLs will contain a token which will be verified by the
-dispatch filter. The prevents modification of query string params.
+middleware. The prevents modification of query string params.
