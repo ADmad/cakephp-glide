@@ -5,6 +5,7 @@ namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
 use Cake\Http\ServerRequest;
+use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use Cake\View\View;
@@ -51,8 +52,8 @@ class GlideHelperTest extends TestCase
             ],
         ], $result);
 
-        $this->helper->Html->Url->getView()->setRequest(
-            $this->helper->Html->Url->getView()->getRequest()
+        Router::setRequest(
+            $this->helper->getView()->getRequest()
                 ->withAttribute('webroot', '/subfolder/')
         );
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
