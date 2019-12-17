@@ -220,7 +220,8 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      */
     protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
-        if ((empty($this->_params)
+        if (
+            (empty($this->_params)
                 || (count($this->_params) === 1 && isset($this->_params['s']))
             )
             && $this->getConfig('originalPassThrough')
