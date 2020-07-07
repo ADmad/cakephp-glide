@@ -13,6 +13,7 @@ use Cake\Event\EventManagerInterface;
 use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
+use Laminas\Diactoros\Stream;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
@@ -20,7 +21,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Stream;
 
 class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 {
@@ -83,7 +83,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \Psr\Http\Server\RequestHandlerInterface $handler The request handler.
-     *
      * @return \Psr\Http\Message\ResponseInterface A response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -137,7 +136,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * Get glide server instance.
      *
      * @param array|callable $config Config array or callable.
-     *
      * @return \League\Glide\Server
      */
     protected function _getServer($config): Server
@@ -153,7 +151,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * Check signature token if secure URLs are enabled.
      *
      * @throws \ADmad\Glide\Exception\SignatureException
-     *
      * @return void
      */
     protected function _checkSignature()
@@ -181,7 +178,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \League\Glide\Server $server Glide server.
-     *
      * @return \Psr\Http\Message\ResponseInterface|int|null
      */
     protected function _checkModified(ServerRequestInterface $request, Server $server)
@@ -215,7 +211,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \League\Glide\Server $server Glide server.
-     *
      * @return \Psr\Http\Message\ResponseInterface|null Response instance on success else null
      */
     protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
@@ -255,9 +250,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @param \League\Glide\Server $server Glide server.
-
      * @throws \ADmad\Glide\Exception\ResponseException
-     *
      * @return \Psr\Http\Message\ResponseInterface Response instance
      */
     protected function _passThrough(ServerRequestInterface $request, Server $server): ?ResponseInterface
@@ -285,7 +278,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request to check.
      * @param string|int $modifiedTime Last modified time of file.
-     *
      * @return bool
      */
     protected function _isNotModified(ServerRequestInterface $request, $modifiedTime)
@@ -304,7 +296,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @param string $cacheTime Cache time.
      * @param int|string $modifiedTime Modified time.
-     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     protected function _withCacheHeaders(ResponseInterface $response, string $cacheTime, $modifiedTime)
@@ -323,7 +314,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * Return response instance with headers specified in config.
      *
      * @param \Psr\Http\Message\ResponseInterface $response The response.
-     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     protected function _withCustomHeaders(ResponseInterface $response)
@@ -340,9 +330,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request Request instance.
      * @param \Exception $exception Exception instance.
-     *
      * @throws \ADmad\Glide\Exception\ResponseException
-     *
      * @return \Psr\Http\Message\ResponseInterface|null
      */
     protected function _handleException(ServerRequestInterface $request, $exception): ?ResponseInterface

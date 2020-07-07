@@ -5,10 +5,10 @@ namespace ADmad\Glide\Responses;
 
 use ADmad\Glide\Exception\ResponseException;
 use Cake\Http\Response;
+use Laminas\Diactoros\Stream;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Filesystem\FilesystemException;
 use League\Glide\Responses\ResponseFactoryInterface;
-use Zend\Diactoros\Stream;
 
 class PsrResponseFactory implements ResponseFactoryInterface
 {
@@ -17,7 +17,6 @@ class PsrResponseFactory implements ResponseFactoryInterface
      *
      * @param \League\Flysystem\FilesystemInterface $cache Cache file system.
      * @param string $path Cached file path.
-     *
      * @return \Psr\Http\Message\ResponseInterface Response object.
      */
     public function create(FilesystemInterface $cache, $path)
