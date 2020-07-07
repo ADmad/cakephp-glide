@@ -114,13 +114,13 @@ class GlideMiddlewareTest extends TestCase
         $signature = new Signature(Security::getSalt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
-        $request = ServerRequestFactory::fromGlobals([
-            'REQUEST_URI' => '/images/cake%20logo.png',
-            'QUERY_STRING' => 'w=100&s=' . $sig,
-        ]);
+        $request = ServerRequestFactory::fromGlobals(
+            ['REQUEST_URI' => '/images/cake%20logo.png'],
+            ['w' => 100, 's' => $sig]
+        );
 
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware->process($request, $this->handler);
+        $middleware->process($request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake logo.png'));
     }

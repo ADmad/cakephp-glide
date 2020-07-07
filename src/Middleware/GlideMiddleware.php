@@ -57,13 +57,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     protected $_path = '';
 
     /**
-     * Glide params for generating thumbnails.
-     *
-     * @var array
-     */
-    protected $_params = [];
-
-    /**
      * Constructor.
      *
      * @param array $config Array of config.
@@ -89,7 +82,6 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     {
         $uri = $request->getUri();
         $this->_path = urldecode($uri->getPath());
-        parse_str($uri->getQuery(), $this->_params);
 
         $config = $this->getConfig();
 
@@ -97,7 +89,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             return $handler->handle($request);
         }
 
-        $this->_checkSignature();
+        $this->_checkSignature($request);
 
         $server = $this->_getServer($config['server']);
 
@@ -150,10 +142,11 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     /**
      * Check signature token if secure URLs are enabled.
      *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
      * @throws \ADmad\Glide\Exception\SignatureException
      * @return void
      */
-    protected function _checkSignature()
+    protected function _checkSignature(ServerRequestInterface $request)
     {
         if (!$this->getConfig('security.secureUrls')) {
             return;
@@ -163,7 +156,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         try {
             SignatureFactory::create($signKey)->validateRequest(
                 $this->_path,
-                $this->_params
+                $request->getQueryParams()
             );
         } catch (Exception $exception) {
             throw new SignatureException($exception->getMessage(), null, $exception);
@@ -215,9 +208,11 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      */
     protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
+        $queryParams = $request->getQueryParams();
+
         if (
-            (empty($this->_params)
-                || (count($this->_params) === 1 && isset($this->_params['s']))
+            (empty($queryParams)
+                || (count($queryParams) === 1 && isset($queryParams['s']))
             )
             && $this->getConfig('originalPassThrough')
         ) {
@@ -237,7 +232,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         }
 
         try {
-            $response = $server->getImageResponse($this->_path, $this->_params);
+            $response = $server->getImageResponse($this->_path, $request->getQueryParams());
         } catch (Exception $exception) {
             return $this->_handleException($request, $exception);
         }
