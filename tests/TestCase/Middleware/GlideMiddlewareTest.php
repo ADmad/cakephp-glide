@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace ADmad\Glide\TestCase\Middleware;
 
 use ADmad\Glide\Exception\ResponseException;
@@ -11,11 +13,12 @@ use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
+use TestApp\Http\TestRequestHandler;
 use Zend\Diactoros\Stream;
 
 class GlideMiddlewareTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = [
             'server' => [
@@ -27,10 +30,7 @@ class GlideMiddlewareTest extends TestCase
         $this->request = ServerRequestFactory::fromGlobals([
             'REQUEST_URI' => '/images/cake-logo.png?w=100',
         ]);
-        $this->response = new Response();
-        $this->next = function ($req, $res) {
-            return $res;
-        };
+        $this->handler = new TestRequestHandler();
 
         Security::setSalt('salt');
 
@@ -41,7 +41,7 @@ class GlideMiddlewareTest extends TestCase
     public function testNormalResponse()
     {
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($this->request, $this->response, $this->next);
+        $response = $middleware->process($this->request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
@@ -59,7 +59,7 @@ class GlideMiddlewareTest extends TestCase
         };
 
         $middleware = new GlideMiddleware($config);
-        $response = $middleware($this->request, $this->response, $this->next);
+        $response = $middleware->process($this->request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
     }
@@ -73,7 +73,7 @@ class GlideMiddlewareTest extends TestCase
         ]);
 
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($request, $this->response, $this->next);
+        $response = $middleware->process($request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
@@ -88,7 +88,7 @@ class GlideMiddlewareTest extends TestCase
         clearstatcache(false, TMP . 'cache/cake-logo.png');
 
         $middleware = new GlideMiddleware($this->config + ['originalPassThrough' => true]);
-        $response = $middleware($request, $this->response, $this->next);
+        $response = $middleware->process($request, $this->handler);
 
         $this->assertFalse(is_dir(TMP . 'cache/cake-logo.png'));
 
@@ -99,7 +99,7 @@ class GlideMiddlewareTest extends TestCase
     public function testPathConfig()
     {
         $middleware = new GlideMiddleware(['path' => '/img'] + $this->config);
-        $response = $middleware($this->request, $this->response, $this->next);
+        $response = $middleware->process($this->request, $this->handler);
 
         $this->assertFalse(is_dir(TMP . 'cache/cake-logo.png'));
 
@@ -114,13 +114,13 @@ class GlideMiddlewareTest extends TestCase
         $signature = new Signature(Security::getSalt());
         $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
-        $request = ServerRequestFactory::fromGlobals([
-            'REQUEST_URI' => '/images/cake%20logo.png',
-            'QUERY_STRING' => 'w=100&s=' . $sig,
-        ]);
+        $request = ServerRequestFactory::fromGlobals(
+            ['REQUEST_URI' => '/images/cake%20logo.png'],
+            ['w' => 100, 's' => $sig]
+        );
 
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($request, $this->response, $this->next);
+        $middleware->process($request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake logo.png'));
     }
@@ -128,7 +128,7 @@ class GlideMiddlewareTest extends TestCase
     public function testCache()
     {
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($this->request, $this->response, $this->next);
+        $response = $middleware->process($this->request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
 
@@ -143,7 +143,7 @@ class GlideMiddlewareTest extends TestCase
         ]);
 
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($request, $this->response, $this->next);
+        $response = $middleware->process($request, $this->handler);
 
         $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals('', $response->getBody()->getContents());
@@ -157,7 +157,7 @@ class GlideMiddlewareTest extends TestCase
         ];
 
         $middleware = new GlideMiddleware($this->config);
-        $response = $middleware($this->request, $this->response, $this->next);
+        $response = $middleware->process($this->request, $this->handler);
         $this->assertEquals('some-value', $response->getHeaders()['X-Custom'][0]);
     }
 
@@ -177,7 +177,7 @@ class GlideMiddlewareTest extends TestCase
         $this->expectException(SignatureException::class);
         $this->expectExceptionCode(403);
         $this->expectExceptionMessage('Signature is missing.');
-        $middleware($request, $this->response, $this->next);
+        $middleware->process($request, $this->handler);
     }
 
     public function testResponseException()
@@ -188,7 +188,7 @@ class GlideMiddlewareTest extends TestCase
         ]);
 
         $this->expectException(ResponseException::class);
-        $middleware($request, $this->response, $this->next);
+        $middleware->process($request, $this->handler);
     }
 
     public function testExceptionEventListener()
@@ -203,7 +203,7 @@ class GlideMiddlewareTest extends TestCase
                 ->withFile(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png');
         });
 
-        $response = $middleware($request, $this->response, $this->next);
+        $response = $middleware->process($request, $this->handler);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('image/png', $response->getHeaderLine('Content-Type'));
     }

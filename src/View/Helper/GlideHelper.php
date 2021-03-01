@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace ADmad\Glide\View\Helper;
 
 use Cake\Utility\Security;
 use Cake\View\Helper;
+use League\Glide\Urls\UrlBuilder;
 use League\Glide\Urls\UrlBuilderFactory;
 
 /**
@@ -17,7 +20,7 @@ class GlideHelper extends Helper
      *
      * @var array
      */
-    public $helpers = ['Html'];
+    protected $helpers = ['Html'];
 
     /**
      * Default config for this helper.
@@ -44,39 +47,15 @@ class GlideHelper extends Helper
     protected $_urlBuilder;
 
     /**
-     * Webroot.
-     *
-     * @var bool
-     */
-    protected $_webroot;
-
-    /**
-     * Initialize hook
-     *
-     * @param array $config Config
-     * @return void
-     */
-    public function initialize(array $config)
-    {
-        if (method_exists($this->_View, 'getRequest')) {
-            $this->_webroot = $this->_View->getRequest()->getAttribute('webroot');
-        } else {
-            $this->_webroot = $this->request->getAttribute('webroot');
-        }
-    }
-
-    /**
      * Creates a formatted IMG element.
      *
      * @param string $path Image path.
      * @param array $params Image manipulation parameters.
      * @param array $options Array of HTML attributes for image tag.
-     *
      * @return string Complete <img> tag.
-     *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
-    public function image($path, array $params = [], array $options = [])
+    public function image(string $path, array $params = [], array $options = []): string
     {
         return $this->Html->image(
             $this->url($path, $params + ['_base' => false]),
@@ -89,12 +68,10 @@ class GlideHelper extends Helper
      *
      * @param string $path Image path.
      * @param array $params Image manipulation parameters.
-     *
      * @return string Image URL.
-     *
      * @see http://glide.thephpleague.com/1.0/api/quick-reference/
      */
-    public function url($path, array $params = [])
+    public function url(string $path, array $params = []): string
     {
         $base = true;
         if (isset($params['_base'])) {
@@ -103,7 +80,7 @@ class GlideHelper extends Helper
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
         if ($base && strpos($url, 'http') !== 0) {
-            $url = $this->_webroot . ltrim($url, '/');
+            $url = $this->getView()->getRequest()->getAttribute('webroot') . ltrim($url, '/');
         }
 
         return $url;
@@ -114,10 +91,9 @@ class GlideHelper extends Helper
      *
      * @param \League\Glide\Urls\UrlBuilder|null $urlBuilder URL builder instance to
      *   set or null to get instance.
-     *
      * @return \League\Glide\Urls\UrlBuilder URL builder instance.
      */
-    public function urlBuilder($urlBuilder = null)
+    public function urlBuilder(?UrlBuilder $urlBuilder = null): UrlBuilder
     {
         if ($urlBuilder !== null) {
             return $this->_urlBuilder = $urlBuilder;

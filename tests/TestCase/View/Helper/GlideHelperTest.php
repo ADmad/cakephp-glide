@@ -1,15 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace ADmad\Glide\TestCase\View\Helper;
 
 use ADmad\Glide\View\Helper\GlideHelper;
 use Cake\Http\ServerRequest;
+use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
 use Cake\View\View;
 
 class GlideHelperTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->request = new ServerRequest();
         $this->request = $this->request->withAttribute('webroot', '/');
@@ -24,13 +27,9 @@ class GlideHelperTest extends TestCase
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/images/logo.png?w=100', $result);
 
-        if (method_exists($this->helper->getView(), 'setRequest') && method_exists($this->helper->getView(), 'getRequest')) {
-            $this->helper->getView()->setRequest($this->helper->getView()->getRequest()->withAttribute('webroot', '/subfolder/'));
-        } else {
-            $this->helper->request = $this->helper->request->withAttribute('webroot', '/subfolder/');
-        }
-        $this->helper->initialize([]);
-
+        $this->helper->getView()->setRequest(
+            $this->helper->getView()->getRequest()->withAttribute('webroot', '/subfolder/')
+        );
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/subfolder/images/logo.png?w=100', $result);
 
@@ -39,7 +38,7 @@ class GlideHelperTest extends TestCase
             'secureUrls' => true,
         ]);
         $result = $helper->url('logo.png', ['w' => 100]);
-        $this->assertContains('&s=', $result);
+        $this->assertStringContainsString('&s=', $result);
     }
 
     public function testImage()
@@ -53,12 +52,10 @@ class GlideHelperTest extends TestCase
             ],
         ], $result);
 
-        if (method_exists($this->helper->getView(), 'setRequest') && method_exists($this->helper->getView(), 'getRequest')) {
-            $this->helper->Html->Url->getView()->setRequest($this->helper->Html->Url->getView()->getRequest()->withAttribute('webroot', '/subfolder/'));
-        } else {
-            $this->helper->Html->Url->request = $this->helper->Html->Url->request->withAttribute('webroot', '/subfolder/');
-        }
-
+        Router::setRequest(
+            $this->helper->getView()->getRequest()
+                ->withAttribute('webroot', '/subfolder/')
+        );
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
         $this->assertHtml([
             'img' => [
