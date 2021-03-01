@@ -295,6 +295,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      */
     protected function _withCacheHeaders(ResponseInterface $response, string $cacheTime, $modifiedTime)
     {
+        /** @var int $expire */
         $expire = strtotime($cacheTime);
         $maxAge = $expire - time();
 
