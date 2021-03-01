@@ -315,9 +315,9 @@ class GlideMiddleware implements EventDispatcherInterface
 
         return $response
             ->withHeader('Cache-Control', 'public,max-age=' . $maxAge)
-            ->withHeader('Date', gmdate('D, j M Y G:i:s \G\M\T', time()))
-            ->withHeader('Last-Modified', gmdate('D, j M Y G:i:s \G\M\T', (int)$modifiedTime))
-            ->withHeader('Expires', gmdate('D, j M Y G:i:s \G\M\T', $expire));
+            ->withHeader('Date', gmdate('D, j M Y H:i:s \G\M\T', time()))
+            ->withHeader('Last-Modified', gmdate('D, j M Y H:i:s \G\M\T', (int)$modifiedTime))
+            ->withHeader('Expires', gmdate('D, j M Y H:i:s \G\M\T', $expire));
     }
 
     /**
