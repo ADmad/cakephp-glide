@@ -6,11 +6,13 @@ namespace ADmad\Glide\TestCase\Middleware;
 use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Middleware\GlideMiddleware;
+use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
+use League\Flysystem\UnableToRetrieveMetadata;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
 use TestApp\Http\TestRequestHandler;
@@ -180,6 +182,17 @@ class GlideMiddlewareTest extends TestCase
         $middleware->process($request, $this->handler);
     }
 
+    public function test3rdPartyException()
+    {
+        $middleware = new GlideMiddleware($this->config);
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/non-existent.jpg',
+        ]);
+
+        $this->expectException(UnableToRetrieveMetadata::class);
+        $middleware->process($request, $this->handler);
+    }
+
     public function testResponseException()
     {
         $middleware = new GlideMiddleware($this->config);
@@ -187,8 +200,10 @@ class GlideMiddlewareTest extends TestCase
             'REQUEST_URI' => '/images/non-existent.jpg',
         ]);
 
+        Configure::write('debug', false);
         $this->expectException(ResponseException::class);
         $middleware->process($request, $this->handler);
+        Configure::write('debug', true);
     }
 
     public function testExceptionEventListener()

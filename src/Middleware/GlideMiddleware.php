@@ -6,6 +6,7 @@ namespace ADmad\Glide\Middleware;
 use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Response\PsrResponseFactory;
+use Cake\Core\Configure;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
@@ -340,6 +341,10 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 
         if ($result instanceof ResponseInterface) {
             return $result;
+        }
+
+        if (Configure::read('debug')) {
+            throw $exception;
         }
 
         throw new ResponseException(null, null, $exception);
