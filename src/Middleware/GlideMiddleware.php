@@ -5,7 +5,7 @@ namespace ADmad\Glide\Middleware;
 
 use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
-use ADmad\Glide\Responses\PsrResponseFactory;
+use ADmad\Glide\Response\PsrResponseFactory;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
@@ -180,7 +180,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         try {
             /** @var int|string|false $modifiedTime */
             $modifiedTime = $server->getSource()
-                ->getTimestamp($server->getSourcePath($this->_path));
+                ->lastModified($server->getSourcePath($this->_path));
         } catch (Exception $exception) {
             return $this->_handleException($request, $exception);
         }
@@ -254,13 +254,10 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         $path = $server->getSourcePath($this->_path);
 
         $resource = $source->readStream($path);
-        if ($resource === false) {
-            throw new ResponseException();
-        }
         $stream = new Stream($resource);
 
-        $contentType = $source->getMimetype($path);
-        $contentLength = $source->getSize($path);
+        $contentType = $source->mimeType($path);
+        $contentLength = $source->fileSize($path);
 
         /** @psalm-suppress PossiblyFalseArgument */
         return (new Response())->withBody($stream)

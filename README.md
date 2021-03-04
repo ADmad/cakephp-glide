@@ -55,7 +55,7 @@ Router::scope('/images', function ($routes) {
             'base_url' => '/images/',
 
             // Response class for serving images. If unset (default) an instance of
-            // \ADmad\Glide\Responses\PsrResponseFactory() will be used.
+            // \ADmad\Glide\Response\PsrResponseFactory() will be used.
             // http://glide.thephpleague.com/1.0/config/responses/
             'response' => null,
         ],
