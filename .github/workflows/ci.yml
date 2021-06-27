@@ -15,24 +15,18 @@ jobs:
             composer-opts: '--prefer-lowest'
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+    - uses: actions/checkout@v2
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
-        extension-csv: mbstring, intl
+        extensions: mbstring, intl
         coverage: pcov
 
     - name: Composer install
       run: |
-        if [[ ${{ matrix.php-version }} == '8.0' ]]; then
-          composer update --ignore-platform-reqs
-        else
-          composer update ${{ matrix.composer-opts }}
-        fi
+        composer update ${{ matrix.composer-opts }}
 
     - name: Run PHPUnit
       run: |
@@ -51,20 +45,18 @@ jobs:
       runs-on: ubuntu-18.04
 
       steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v2
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          extension-csv: mbstring, intl
+          extensions: mbstring, intl
           coverage: none
-          tools: cs2pr, psalm:^4.1
+          tools: cs2pr, psalm:^4.8
 
       - name: Composer Install
-        run: composer require cakephp/cakephp-codesniffer:^4.1
+        run: composer require cakephp/cakephp-codesniffer:^4.5
 
       - name: Run phpcs
         run: vendor/bin/phpcs --report=checkstyle -q --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/ | cs2pr
