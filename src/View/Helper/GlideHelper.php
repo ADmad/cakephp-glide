@@ -31,7 +31,7 @@ class GlideHelper extends Helper
      * - `signKey`: Signing key to use when generating secure URLs. If empty
      *   value of `Security::salt()` will be used. Default `null`.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [
         'baseUrl' => '/images/',

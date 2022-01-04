@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.2', '7.4', '8.0']
+        php-version: ['7.4', '8.0', '8.1']
         composer-opts: ['']
         include:
           - php-version: '7.2'
@@ -38,7 +38,7 @@ jobs:
 
     - name: Code Coverage Report
       if: matrix.php-version == '7.4'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
 
   cs-stan:
       name: Coding Standard & Static Analysis
@@ -53,7 +53,7 @@ jobs:
           php-version: '7.4'
           extensions: mbstring, intl
           coverage: none
-          tools: cs2pr, psalm:^4.8
+          tools: cs2pr, vimeo/psalm:^4
 
       - name: Composer Install
         run: composer require cakephp/cakephp-codesniffer:^4.5

@@ -29,9 +29,10 @@ class GlideMiddlewareTest extends TestCase
             ],
         ];
 
-        $this->request = ServerRequestFactory::fromGlobals([
-            'REQUEST_URI' => '/images/cake-logo.png?w=100',
-        ]);
+        $this->request = ServerRequestFactory::fromGlobals(
+            ['REQUEST_URI' => '/images/cake-logo.png'],
+            ['w' => '100']
+        );
         $this->handler = new TestRequestHandler();
 
         Security::setSalt('salt');
@@ -64,6 +65,24 @@ class GlideMiddlewareTest extends TestCase
         $response = $middleware->process($this->request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
+    }
+
+    public function testAllowedParams()
+    {
+        $this->config['allowedParams'] = ['w'];
+        $middleware = new GlideMiddleware($this->config);
+        $middleware->process($this->request, $this->handler);
+
+        $request = ServerRequestFactory::fromGlobals(
+            ['REQUEST_URI' => '/images/cake-logo.png'],
+            ['w' => '100', 'foo' => 'bar']
+        );
+
+        $middleware = new GlideMiddleware($this->config);
+        $middleware->process($request, $this->handler);
+
+        $files = glob(TMP . 'cache/cake-logo.png/*');
+        $this->assertSame(1, count($files));
     }
 
     public function testOriginalPassThrough()
@@ -139,10 +158,13 @@ class GlideMiddlewareTest extends TestCase
         $this->assertTrue(isset($headers['Last-Modified']));
         $this->assertTrue(isset($headers['Expires']));
 
-        $request = ServerRequestFactory::fromGlobals([
-            'REQUEST_URI' => '/images/cake-logo.png?w=100',
-            'HTTP_IF_MODIFIED_SINCE' => $headers['Last-Modified'][0],
-        ]);
+        $request = ServerRequestFactory::fromGlobals(
+            [
+                'REQUEST_URI' => '/images/cake-logo.png',
+                'HTTP_IF_MODIFIED_SINCE' => $headers['Last-Modified'][0],
+            ],
+            ['w' => '100']
+        );
 
         $middleware = new GlideMiddleware($this->config);
         $response = $middleware->process($request, $this->handler);

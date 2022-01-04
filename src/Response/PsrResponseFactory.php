@@ -6,6 +6,7 @@ namespace ADmad\Glide\Response;
 use ADmad\Glide\Exception\ResponseException;
 use Cake\Http\Response;
 use Laminas\Diactoros\Stream;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Glide\Responses\ResponseFactoryInterface;
 
@@ -20,10 +21,12 @@ class PsrResponseFactory implements ResponseFactoryInterface
      */
     public function create(FilesystemOperator $cache, $path)
     {
-        $resource = $cache->readStream($path);
-        if ($resource === false) {
-            throw new ResponseException();
+        try {
+            $resource = $cache->readStream($path);
+        } catch (FilesystemException $e) {
+            throw new ResponseException(null, null, $e);
         }
+
         $stream = new Stream($resource);
 
         $contentType = $cache->mimeType($path);

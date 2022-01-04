@@ -77,7 +77,12 @@ $routes->scope('/images', function ($routes) {
         // Any response headers you may want to set. Default null.
         'headers' => [
             'X-Custom' => 'some-value',
-        ]
+        ],
+
+        // Allowed query string params. If for e.g. you are only using glide presets
+        // then you can set allowed params as `['p']` to prevent users from using
+        // any other image manipulation params.
+        'allowedParams' => null
     ]));
 
     $routes->applyMiddleware('glide');
