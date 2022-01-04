@@ -47,6 +47,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             'signKey' => null,
         ],
         'headers' => null,
+        'allowedParams' => null,
         'originalPassThrough' => false,
     ];
 
@@ -210,6 +211,10 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
         $queryParams = $request->getQueryParams();
+        $allowedParams = $this->getConfig('allowedParams');
+        if ($allowedParams) {
+            $queryParams = array_intersect_key($queryParams, array_flip($allowedParams));
+        }
 
         if (
             (empty($queryParams)
@@ -233,7 +238,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         }
 
         try {
-            $response = $server->getImageResponse($this->_path, $request->getQueryParams());
+            $response = $server->getImageResponse($this->_path, $queryParams);
         } catch (Exception $exception) {
             return $this->_handleException($request, $exception);
         }
