@@ -12,11 +12,11 @@ use Cake\Http\Response;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
+use Laminas\Diactoros\Stream;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
 use TestApp\Http\TestRequestHandler;
-use Zend\Diactoros\Stream;
 
 class GlideMiddlewareTest extends TestCase
 {

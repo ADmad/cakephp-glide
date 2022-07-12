@@ -20,7 +20,7 @@ class GlideHelper extends Helper
      *
      * @var array
      */
-    protected $helpers = ['Html'];
+    protected array $helpers = ['Html'];
 
     /**
      * Default config for this helper.
@@ -33,7 +33,7 @@ class GlideHelper extends Helper
      *
      * @var array<string, mixed>
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'baseUrl' => '/images/',
         'secureUrls' => false,
         'signKey' => null,
@@ -44,7 +44,7 @@ class GlideHelper extends Helper
      *
      * @var \League\Glide\Urls\UrlBuilder|null
      */
-    protected $_urlBuilder;
+    protected ?UrlBuilder $_urlBuilder;
 
     /**
      * Creates a formatted IMG element.

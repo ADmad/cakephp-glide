@@ -5,22 +5,20 @@
     stopOnFailure="false"
     bootstrap="./tests/bootstrap.php"
     >
-    <php>
-        <ini name="memory_limit" value="-1"/>
-    </php>
 
-    <!-- Add any additional test suites you want to run here -->
     <testsuites>
         <testsuite name="ADmad/Glide TestSuite">
             <directory>./tests/TestCase</directory>
         </testsuite>
-        <!-- Add plugin test suites here. -->
     </testsuites>
 
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./src/</directory>
-            <directory suffix=".ctp">./src/</directory>
-        </whitelist>
-    </filter>
+    <extensions>
+        <extension class="Cake\TestSuite\Fixture\PHPUnitExtension"/>
+    </extensions>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+    </coverage>
 </phpunit>
