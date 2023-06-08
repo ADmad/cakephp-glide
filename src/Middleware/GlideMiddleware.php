@@ -23,9 +23,16 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * @implements \Cake\Event\EventDispatcherInterface<\ADmad\Glide\Middleware\GlideMiddleware>
+ */
 class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 {
+    /**
+     * @use \Cake\Event\EventDispatcherTrait<\ADmad\Glide\Middleware\GlideMiddleware>
+     */
     use EventDispatcherTrait;
+
     use InstanceConfigTrait;
 
     public const RESPONSE_FAILURE_EVENT = 'Glide.response_failure';

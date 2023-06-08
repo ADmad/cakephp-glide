@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    colors="true"
-    processIsolation="false"
-    stopOnFailure="false"
-    bootstrap="./tests/bootstrap.php"
-    >
-
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" processIsolation="false" stopOnFailure="false" bootstrap="./tests/bootstrap.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd" cacheDirectory=".phpunit.cache">
     <testsuites>
         <testsuite name="ADmad/Glide TestSuite">
             <directory>./tests/TestCase</directory>
         </testsuite>
     </testsuites>
-
     <extensions>
-        <extension class="Cake\TestSuite\Fixture\PHPUnitExtension"/>
+        <bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
     </extensions>
-
-    <coverage>
+    <coverage/>
+    <source>
         <include>
             <directory suffix=".php">src/</directory>
         </include>
-    </coverage>
+    </source>
 </phpunit>

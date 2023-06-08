@@ -44,7 +44,7 @@ class GlideHelper extends Helper
      *
      * @var \League\Glide\Urls\UrlBuilder|null
      */
-    protected ?UrlBuilder $_urlBuilder;
+    protected ?UrlBuilder $_urlBuilder = null;
 
     /**
      * Creates a formatted IMG element.
