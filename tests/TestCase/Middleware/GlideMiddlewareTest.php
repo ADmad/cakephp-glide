@@ -62,7 +62,7 @@ class GlideMiddlewareTest extends TestCase
         };
 
         $middleware = new GlideMiddleware($config);
-        $response = $middleware->process($this->request, $this->handler);
+        $middleware->process($this->request, $this->handler);
 
         $this->assertTrue(is_dir(TMP . 'cache/cake-logo.png'));
     }
@@ -190,7 +190,7 @@ class GlideMiddlewareTest extends TestCase
         $this->config['security']['secureUrls'] = true;
 
         $signature = new Signature(Security::getSalt());
-        $sig = $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
+        $signature->generateSignature('/images/cake logo.png', ['w' => 100]);
 
         $request = ServerRequestFactory::fromGlobals([
             'REQUEST_URI' => '/images/cake%20logo.png',
