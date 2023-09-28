@@ -9,9 +9,11 @@ use Laminas\Diactoros\Stream;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Glide\Responses\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class PsrResponseFactory implements ResponseFactoryInterface
 {
+    // phpcs:disable
     /**
      * Create response.
      *
@@ -19,8 +21,9 @@ class PsrResponseFactory implements ResponseFactoryInterface
      * @param string $path Cached file path.
      * @return \Psr\Http\Message\ResponseInterface Response object.
      */
-    public function create(FilesystemOperator $cache, $path)
+    public function create(FilesystemOperator $cache, $path): ResponseInterface
     {
+        // phpcs:enable
         try {
             $resource = $cache->readStream($path);
         } catch (FilesystemException $e) {

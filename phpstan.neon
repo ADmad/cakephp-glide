@@ -1,4 +1,5 @@
 parameters:
-    level: 6
-    ignoreErrors:
-        - '#Access to an undefined property ADmad\\Glide\\View\\Helper\\GlideHelper::\$request#'
+    level: 8
+    checkMissingIterableValueType: false
+    paths:
+        - src/

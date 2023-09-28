@@ -1,6 +1,6 @@
 # CakePHP Glide
 
-[![Build Status](https://img.shields.io/github/workflow/status/ADmad/cakephp-glide/CI/master?style=flat-square)](https://github.com/ADmad/cakephp-glide/actions?query=workflow%3ACI+branch%3Amaster)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ADmad/cakephp-glide/ci.yml?style=flat-square&branch=master)](https://github.com/ADmad/cakephp-glide/actions?query=workflow%3ACI+branch%3Amaster)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ADmad/cakephp-glide.svg?style=flat-square)](https://codecov.io/github/ADmad/cakephp-glide)
 [![Total Downloads](https://img.shields.io/packagist/dt/ADmad/cakephp-glide.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-glide)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.txt)
