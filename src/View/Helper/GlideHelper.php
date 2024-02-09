@@ -75,7 +75,7 @@ class GlideHelper extends Helper
     {
         $base = true;
         if (isset($params['_base'])) {
-            $base = $params['_base'];
+            $base = (bool)$params['_base'];
             unset($params['_base']);
         }
         $url = $this->urlBuilder()->getUrl($path, $params);
