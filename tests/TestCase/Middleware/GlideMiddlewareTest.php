@@ -9,6 +9,7 @@ use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
+use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
@@ -16,10 +17,15 @@ use Laminas\Diactoros\Stream;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
+use Psr\Http\Server\RequestHandlerInterface;
 use TestApp\Http\TestRequestHandler;
 
 class GlideMiddlewareTest extends TestCase
 {
+    protected array $config;
+    protected ServerRequest $request;
+    protected RequestHandlerInterface $handler;
+
     public function setUp(): void
     {
         $this->config = [

@@ -12,6 +12,10 @@ use Cake\View\View;
 
 class GlideHelperTest extends TestCase
 {
+    protected ServerRequest $request;
+    protected View $view;
+    protected GlideHelper $helper;
+
     public function setUp(): void
     {
         $this->request = new ServerRequest();
