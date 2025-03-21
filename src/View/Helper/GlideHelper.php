@@ -59,7 +59,7 @@ class GlideHelper extends Helper
     {
         return $this->Html->image(
             $this->url($path, $params + ['_base' => false]),
-            $options
+            $options,
         );
     }
 
@@ -104,7 +104,7 @@ class GlideHelper extends Helper
 
             $this->_urlBuilder = UrlBuilderFactory::create(
                 $config['baseUrl'],
-                $config['secureUrls'] ? ($config['signKey'] ?: Security::getSalt()) : null
+                $config['secureUrls'] ? ($config['signKey'] ?: Security::getSalt()) : null,
             );
         }
 

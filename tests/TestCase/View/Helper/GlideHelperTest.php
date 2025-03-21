@@ -32,7 +32,7 @@ class GlideHelperTest extends TestCase
         $this->assertEquals('/images/logo.png?w=100', $result);
 
         $this->helper->getView()->setRequest(
-            $this->helper->getView()->getRequest()->withAttribute('webroot', '/subfolder/')
+            $this->helper->getView()->getRequest()->withAttribute('webroot', '/subfolder/'),
         );
         $result = $this->helper->url('logo.png', ['w' => 100]);
         $this->assertEquals('/subfolder/images/logo.png?w=100', $result);
@@ -58,7 +58,7 @@ class GlideHelperTest extends TestCase
 
         Router::setRequest(
             $this->helper->getView()->getRequest()
-                ->withAttribute('webroot', '/subfolder/')
+                ->withAttribute('webroot', '/subfolder/'),
         );
         $result = $this->helper->image('logo.png', ['w' => 100], ['width' => 100]);
         $this->assertHtml([

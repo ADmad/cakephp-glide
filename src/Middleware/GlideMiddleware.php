@@ -124,7 +124,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             $response = $this->_withCacheHeaders(
                 $response,
                 $config['cacheTime'],
-                $modifiedTime
+                $modifiedTime,
             );
         }
 
@@ -165,7 +165,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         try {
             SignatureFactory::create($signKey)->validateRequest(
                 $this->_path,
-                $request->getQueryParams()
+                $request->getQueryParams(),
             );
         } catch (Exception $exception) {
             throw new SignatureException($exception->getMessage(), null, $exception);
@@ -299,7 +299,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     protected function _withCacheHeaders(
         ResponseInterface $response,
         string $cacheTime,
-        string|int $modifiedTime
+        string|int $modifiedTime,
     ): ResponseInterface {
         /** @var int $expire */
         $expire = strtotime($cacheTime);
@@ -339,7 +339,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     {
         $event = $this->dispatchEvent(
             static::RESPONSE_FAILURE_EVENT,
-            compact('request', 'exception')
+            compact('request', 'exception'),
         );
         $result = $event->getResult();
 

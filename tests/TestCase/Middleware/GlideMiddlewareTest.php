@@ -37,7 +37,7 @@ class GlideMiddlewareTest extends TestCase
 
         $this->request = ServerRequestFactory::fromGlobals(
             ['REQUEST_URI' => '/images/cake-logo.png'],
-            ['w' => '100']
+            ['w' => '100'],
         );
         $this->handler = new TestRequestHandler();
 
@@ -63,7 +63,7 @@ class GlideMiddlewareTest extends TestCase
         $config = $this->config;
         $config['server'] = function () {
             return ServerFactory::create(
-                $this->config['server'] + ['base_url' => '/images']
+                $this->config['server'] + ['base_url' => '/images'],
             );
         };
 
@@ -81,7 +81,7 @@ class GlideMiddlewareTest extends TestCase
 
         $request = ServerRequestFactory::fromGlobals(
             ['REQUEST_URI' => '/images/cake-logo.png'],
-            ['w' => '100', 'foo' => 'bar']
+            ['w' => '100', 'foo' => 'bar'],
         );
 
         $middleware = new GlideMiddleware($this->config);
@@ -108,7 +108,7 @@ class GlideMiddlewareTest extends TestCase
         $this->assertNotSame(
             $fileSize,
             (int)$headers['Content-Length'][0],
-            'Content length shouldnt be same as original filesize since glide always generates new file.'
+            'Content length shouldnt be same as original filesize since glide always generates new file.',
         );
 
         exec('rm -rf ' . TMP . 'cache/cake-logo.png');
@@ -143,7 +143,7 @@ class GlideMiddlewareTest extends TestCase
 
         $request = ServerRequestFactory::fromGlobals(
             ['REQUEST_URI' => '/images/cake%20logo.png'],
-            ['w' => 100, 's' => $sig]
+            ['w' => 100, 's' => $sig],
         );
 
         $middleware = new GlideMiddleware($this->config);
@@ -169,7 +169,7 @@ class GlideMiddlewareTest extends TestCase
                 'REQUEST_URI' => '/images/cake-logo.png',
                 'HTTP_IF_MODIFIED_SINCE' => $headers['Last-Modified'][0],
             ],
-            ['w' => '100']
+            ['w' => '100'],
         );
 
         $middleware = new GlideMiddleware($this->config);
