@@ -184,18 +184,11 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      */
     protected function _checkModified(ServerRequestInterface $request, Server $server): ResponseInterface|int|null
     {
-        $modifiedTime = false;
-
         try {
-            /** @var string|int|false $modifiedTime */
             $modifiedTime = $server->getSource()
                 ->lastModified($server->getSourcePath($this->_path));
         } catch (Exception $exception) {
             return $this->_handleException($request, $exception);
-        }
-
-        if ($modifiedTime === false) {
-            return null;
         }
 
         if ($this->_isNotModified($request, $modifiedTime)) {
@@ -205,7 +198,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             return $response->withHeader('Last-Modified', (string)$modifiedTime);
         }
 
-        return (int)$modifiedTime;
+        return $modifiedTime;
     }
 
     /**
