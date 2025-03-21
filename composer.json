@@ -28,8 +28,9 @@
         "issues":"https://github.com/ADmad/cakephp-glide/issues"
     },
     "require": {
+        "php": ">=8.1",
         "cakephp/cakephp": "^5.0",
-        "league/glide": "^2.3"
+        "league/glide": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.1"
