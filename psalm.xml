@@ -17,5 +17,6 @@
 
     <issueHandlers>
         <ClassMustBeFinal errorLevel="suppress"/>
+        <PropertyNotSetInConstructor errorLevel="suppress"/>
     </issueHandlers>
 </psalm>

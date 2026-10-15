@@ -15,6 +15,7 @@ use Cake\Http\Response;
 use Cake\Utility\Security;
 use Exception;
 use Laminas\Diactoros\Stream;
+use League\Glide\Api\Encoder;
 use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
@@ -23,14 +24,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * @implements \Cake\Event\EventDispatcherInterface<\ADmad\Glide\Middleware\GlideMiddleware>
- */
 class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 {
-    /**
-     * @use \Cake\Event\EventDispatcherTrait<\ADmad\Glide\Middleware\GlideMiddleware>
-     */
     use EventDispatcherTrait;
 
     use InstanceConfigTrait;
@@ -56,6 +51,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         'headers' => null,
         'allowedParams' => null,
         'originalPassThrough' => false,
+        'passThroughAllowedContentTypes' => [],
     ];
 
     /**
@@ -263,6 +259,15 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         $stream = new Stream($resource);
 
         $contentType = $source->mimeType($path);
+        $allowedContentTypes = $this->getConfig('passThroughAllowedContentTypes', []);
+        if ($allowedContentTypes === []) {
+            $allowedContentTypes = Encoder::supportedFormats();
+        }
+
+        if (!in_array($contentType, $allowedContentTypes, true)) {
+            throw new ResponseException('Content type not supported.');
+        }
+
         $contentLength = $source->fileSize($path);
 
         /** @psalm-suppress PossiblyFalseArgument */
@@ -307,9 +312,9 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 
         return $response
             ->withHeader('Cache-Control', 'public,max-age=' . $maxAge)
-            ->withHeader('Date', gmdate(DATE_RFC7231, time()))
-            ->withHeader('Last-Modified', gmdate(DATE_RFC7231, (int)$modifiedTime))
-            ->withHeader('Expires', gmdate(DATE_RFC7231, $expire));
+            ->withHeader('Date', gmdate('D, d M Y H:i:s \G\M\T', time()))
+            ->withHeader('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', (int)$modifiedTime))
+            ->withHeader('Expires', gmdate('D, d M Y H:i:s \G\M\T', $expire));
     }
 
     /**

@@ -1,6 +1,6 @@
 # CakePHP Glide
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/ADmad/cakephp-glide/ci.yml?style=flat-square&branch=master)](https://github.com/ADmad/cakephp-glide/actions?query=workflow%3ACI+branch%3Amaster)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ADmad/cakephp-glide/ci.yml?branch=master&style=flat-square)](https://github.com/ADmad/cakephp-glide/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ADmad/cakephp-glide.svg?style=flat-square)](https://codecov.io/github/ADmad/cakephp-glide)
 [![Total Downloads](https://img.shields.io/packagist/dt/ADmad/cakephp-glide.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-glide)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.txt)
@@ -82,7 +82,15 @@ $routes->scope('/images', function ($routes) {
         // Allowed query string params. If for e.g. you are only using glide presets
         // then you can set allowed params as `['p']` to prevent users from using
         // any other image manipulation params.
-        'allowedParams' => null
+        'allowedParams' => null,
+
+        // If the image URL is requested without any transformation params then
+        // directly return the original image. Default `false`.
+        'originalPassThrough' => false,
+
+        // Allowed content types in response when "originalPassThrough" is `true`.
+        // By default only the image type supported by Glide are allowed.
+        'passThroughAllowedContentTypes' => [],
     ]));
 
     $routes->applyMiddleware('glide');
