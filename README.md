@@ -82,7 +82,15 @@ $routes->scope('/images', function ($routes) {
         // Allowed query string params. If for e.g. you are only using glide presets
         // then you can set allowed params as `['p']` to prevent users from using
         // any other image manipulation params.
-        'allowedParams' => null
+        'allowedParams' => null,
+
+        // If the image URL is requested without any transformation params then
+        // directly return the original image. Default `false`.
+        'originalPassThrough' => false,
+
+        // Allowed content types in response when "originalPassThrough" is `true`.
+        // By default only the image type supported by Glide are allowed.
+        'passThroughAllowedContentTypes' => [],
     ]));
 
     $routes->applyMiddleware('glide');

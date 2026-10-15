@@ -123,6 +123,37 @@ class GlideMiddlewareTest extends TestCase
         $this->assertSame($fileSize, (int)$headers['Content-Length'][0]);
     }
 
+    /**
+     * Test that original pass through fails for unsupported (non-image) content types.
+     *
+     * @return void
+     */
+    public function testOriginalPassThroughFail()
+    {
+        $this->expectException(ResponseException::class);
+
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/nope.txt',
+        ]);
+
+        (new GlideMiddleware($this->config + ['originalPassThrough' => true]))
+            ->process($request, $this->handler);
+    }
+
+    public function testOriginalPassThroughCustomType()
+    {
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/nope.txt',
+        ]);
+
+        $config = [
+            'originalPassThrough' => true,
+            'passThroughAllowedContentTypes' => ['text/plain'],
+        ] + $this->config;
+        $response = (new GlideMiddleware($config))->process($request, $this->handler);
+        $this->assertSame('text/plain', $response->getHeaderLine('Content-Type'));
+    }
+
     public function testPathConfig()
     {
         $middleware = new GlideMiddleware(['path' => '/img'] + $this->config);
