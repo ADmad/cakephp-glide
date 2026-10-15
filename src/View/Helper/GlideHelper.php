@@ -12,13 +12,14 @@ use League\Glide\Urls\UrlBuilderFactory;
  * GlideHelper
  *
  * @property \Cake\View\Helper\HtmlHelper $Html
+ * @extends \Cake\View\Helper<\Cake\View\View>
  */
 class GlideHelper extends Helper
 {
     /**
      * Helpers used by this helper.
      *
-     * @var array
+     * @var array<int|string, string|array<string, mixed>>
      */
     protected array $helpers = ['Html'];
 
