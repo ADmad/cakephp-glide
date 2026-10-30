@@ -30,14 +30,14 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
 
     use InstanceConfigTrait;
 
-    public const RESPONSE_FAILURE_EVENT = 'Glide.response_failure';
+    public const string RESPONSE_FAILURE_EVENT = 'Glide.response_failure';
 
     /**
      * Default config.
      *
      * @var array
      */
-    protected array $_defaultConfig = [
+    protected array $defaultConfig = [
         'path' => null,
         'cacheTime' => '+1 days',
         'server' => [
@@ -59,7 +59,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      *
      * @var string
      */
-    protected string $_path = '';
+    protected string $path = '';
 
     /**
      * Constructor.
@@ -86,21 +86,21 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri();
-        $this->_path = urldecode($uri->getPath());
+        $this->path = urldecode($uri->getPath());
 
         $config = $this->getConfig();
 
-        if ($config['path'] && strpos($this->_path, $config['path']) !== 0) {
+        if ($config['path'] && strpos($this->path, $config['path']) !== 0) {
             return $handler->handle($request);
         }
 
-        $this->_checkSignature($request);
+        $this->checkSignature($request);
 
-        $server = $this->_getServer($config['server']);
+        $server = $this->getServer($config['server']);
 
         $modifiedTime = null;
         if ($config['cacheTime']) {
-            $return = $this->_checkModified($request, $server);
+            $return = $this->checkModified($request, $server);
             if ($return === null) {
                 return $handler->handle($request);
             }
@@ -110,21 +110,21 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             $modifiedTime = $return;
         }
 
-        $response = $this->_getResponse($request, $server);
+        $response = $this->getResponse($request, $server);
         if ($response === null) {
             return $handler->handle($request);
         }
 
         if ($config['cacheTime']) {
             /** @psalm-suppress PossiblyNullArgument */
-            $response = $this->_withCacheHeaders(
+            $response = $this->withCacheHeaders(
                 $response,
                 $config['cacheTime'],
                 $modifiedTime,
             );
         }
 
-        $response = $this->_withCustomHeaders($response);
+        $response = $this->withCustomHeaders($response);
 
         return $response;
     }
@@ -135,7 +135,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param callable|array $config Config array or callable.
      * @return \League\Glide\Server
      */
-    protected function _getServer(callable|array $config): Server
+    protected function getServer(callable|array $config): Server
     {
         if (is_array($config)) {
             return ServerFactory::create($config);
@@ -151,7 +151,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @throws \ADmad\Glide\Exception\SignatureException
      * @return void
      */
-    protected function _checkSignature(ServerRequestInterface $request): void
+    protected function checkSignature(ServerRequestInterface $request): void
     {
         if (!$this->getConfig('security.secureUrls')) {
             return;
@@ -160,7 +160,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         $signKey = $this->getConfig('security.signKey') ?: Security::getSalt();
         try {
             SignatureFactory::create($signKey)->validateRequest(
-                $this->_path,
+                $this->path,
                 $request->getQueryParams(),
             );
         } catch (Exception $exception) {
@@ -178,18 +178,18 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param \League\Glide\Server $server Glide server.
      * @return \Psr\Http\Message\ResponseInterface|int|null
      */
-    protected function _checkModified(ServerRequestInterface $request, Server $server): ResponseInterface|int|null
+    protected function checkModified(ServerRequestInterface $request, Server $server): ResponseInterface|int|null
     {
         try {
             $modifiedTime = $server->getSource()
-                ->lastModified($server->getSourcePath($this->_path));
+                ->lastModified($server->getSourcePath($this->path));
         } catch (Exception $exception) {
-            return $this->_handleException($request, $exception);
+            return $this->handleException($request, $exception);
         }
 
-        if ($this->_isNotModified($request, $modifiedTime)) {
+        if ($this->isNotModified($request, $modifiedTime)) {
             $response = new Response(['status' => 304]);
-            $response = $this->_withCustomHeaders($response);
+            $response = $this->withCustomHeaders($response);
 
             return $response->withHeader('Last-Modified', (string)$modifiedTime);
         }
@@ -204,7 +204,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param \League\Glide\Server $server Glide server.
      * @return \Psr\Http\Message\ResponseInterface|null Response instance on success else null
      */
-    protected function _getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
+    protected function getResponse(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
         $queryParams = $request->getQueryParams();
         $allowedParams = $this->getConfig('allowedParams');
@@ -219,9 +219,9 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
             && $this->getConfig('originalPassThrough')
         ) {
             try {
-                $response = $this->_passThrough($request, $server);
+                $response = $this->passThrough($request, $server);
             } catch (Exception $exception) {
-                return $this->_handleException($request, $exception);
+                return $this->handleException($request, $exception);
             }
 
             return $response;
@@ -234,9 +234,9 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
         }
 
         try {
-            $response = $server->getImageResponse($this->_path, $queryParams);
+            $response = $server->getImageResponse($this->path, $queryParams);
         } catch (Exception $exception) {
-            return $this->_handleException($request, $exception);
+            return $this->handleException($request, $exception);
         }
 
         return $response;
@@ -250,10 +250,10 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @throws \ADmad\Glide\Exception\ResponseException
      * @return \Psr\Http\Message\ResponseInterface Response instance
      */
-    protected function _passThrough(ServerRequestInterface $request, Server $server): ?ResponseInterface
+    protected function passThrough(ServerRequestInterface $request, Server $server): ?ResponseInterface
     {
         $source = $server->getSource();
-        $path = $server->getSourcePath($this->_path);
+        $path = $server->getSourcePath($this->path);
 
         $resource = $source->readStream($path);
         $stream = new Stream($resource);
@@ -283,7 +283,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param string|int $modifiedTime Last modified time of file.
      * @return bool
      */
-    protected function _isNotModified(ServerRequestInterface $request, string|int $modifiedTime): bool
+    protected function isNotModified(ServerRequestInterface $request, string|int $modifiedTime): bool
     {
         $modifiedSince = $request->getHeaderLine('If-Modified-Since');
         if (!$modifiedSince) {
@@ -301,7 +301,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param string|int $modifiedTime Modified time.
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function _withCacheHeaders(
+    protected function withCacheHeaders(
         ResponseInterface $response,
         string $cacheTime,
         string|int $modifiedTime,
@@ -323,7 +323,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @param \Psr\Http\Message\ResponseInterface $response The response.
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function _withCustomHeaders(ResponseInterface $response): ResponseInterface
+    protected function withCustomHeaders(ResponseInterface $response): ResponseInterface
     {
         foreach ((array)$this->getConfig('headers') as $key => $value) {
             $response = $response->withHeader($key, $value);
@@ -340,7 +340,7 @@ class GlideMiddleware implements MiddlewareInterface, EventDispatcherInterface
      * @throws \ADmad\Glide\Exception\ResponseException
      * @return \Psr\Http\Message\ResponseInterface|null
      */
-    protected function _handleException(ServerRequestInterface $request, Exception $exception): ?ResponseInterface
+    protected function handleException(ServerRequestInterface $request, Exception $exception): ?ResponseInterface
     {
         $event = $this->dispatchEvent(
             static::RESPONSE_FAILURE_EVENT,

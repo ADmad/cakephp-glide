@@ -7,6 +7,7 @@ use ADmad\Glide\Exception\ResponseException;
 use ADmad\Glide\Exception\SignatureException;
 use ADmad\Glide\Middleware\GlideMiddleware;
 use Cake\Core\Configure;
+use Cake\Event\EventInterface;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
@@ -28,6 +29,8 @@ class GlideMiddlewareTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->config = [
             'server' => [
                 'source' => PLUGIN_ROOT . '/test_app/webroot/upload',
@@ -56,6 +59,16 @@ class GlideMiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
         $this->assertTrue(isset($headers['Content-Length']));
+    }
+
+    public function testDefaultConfig(): void
+    {
+        $middleware = new GlideMiddleware($this->config);
+
+        $this->assertSame('/images/', $middleware->getConfig('server.base_url'));
+        $this->assertSame($this->config['server']['source'], $middleware->getConfig('server.source'));
+        $this->assertSame('+1 days', $middleware->getConfig('cacheTime'));
+        $this->assertFalse($middleware->getConfig('security.secureUrls'));
     }
 
     public function testServerCallable()
@@ -262,7 +275,6 @@ class GlideMiddlewareTest extends TestCase
         Configure::write('debug', false);
         $this->expectException(ResponseException::class);
         $middleware->process($request, $this->handler);
-        Configure::write('debug', true);
     }
 
     public function testExceptionEventListener()
@@ -273,12 +285,33 @@ class GlideMiddlewareTest extends TestCase
         ]);
 
         EventManager::instance()->on(GlideMiddleware::RESPONSE_FAILURE_EVENT, function ($event) {
-            return (new Response())
-                ->withFile(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png');
+            $event->setResult(
+                (new Response())->withFile(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png'),
+            );
         });
 
         $response = $middleware->process($request, $this->handler);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('image/png', $response->getHeaderLine('Content-Type'));
+    }
+
+    public function testStoppedExceptionEvent(): void
+    {
+        $eventManager = new EventManager();
+        $eventManager->on(GlideMiddleware::RESPONSE_FAILURE_EVENT, function (EventInterface $event): void {
+            $event->stopPropagation();
+        });
+        $middleware = new GlideMiddleware($this->config, $eventManager);
+        $request = ServerRequestFactory::fromGlobals([
+            'REQUEST_URI' => '/images/non-existent.jpg',
+        ]);
+        $fallback = new Response(['status' => 418]);
+        $handler = new TestRequestHandler(function ($receivedRequest) use ($request, $fallback) {
+            $this->assertSame($request, $receivedRequest);
+
+            return $fallback;
+        });
+
+        $this->assertSame($fallback, $middleware->process($request, $handler));
     }
 }

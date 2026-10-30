@@ -18,6 +18,8 @@ class GlideHelperTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->request = new ServerRequest();
         $this->request = $this->request->withAttribute('webroot', '/');
         $this->view = new View($this->request);
@@ -43,6 +45,15 @@ class GlideHelperTest extends TestCase
         ]);
         $result = $helper->url('logo.png', ['w' => 100]);
         $this->assertStringContainsString('&s=', $result);
+    }
+
+    public function testDefaultConfig(): void
+    {
+        $helper = new GlideHelper($this->view);
+
+        $this->assertSame('/images/logo.png', $helper->url('logo.png'));
+        $this->assertFalse($helper->getConfig('secureUrls'));
+        $this->assertNull($helper->getConfig('signKey'));
     }
 
     public function testImage()
