@@ -14,34 +14,9 @@ permissions:
 
 jobs:
   testsuite:
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        glide: ['^3.0', '^4.0']
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.5'
-          extensions: mbstring, intl, pdo_sqlite, gd
-          ini-values: zend.assertions=1
-          coverage: pcov
-
-      - name: Install dependencies
-        run: composer require 'league/glide:${{ matrix.glide }}' --no-interaction --prefer-dist
-
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit --display-all-issues --fail-on-all-issues --coverage-clover=coverage.xml
-
-      - name: Code Coverage Report
-        if: matrix.glide == '^4.0'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+    uses: ADmad/.github/.github/workflows/testsuite-without-db.yml@cake6
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   cs-stan:
     uses: ADmad/.github/.github/workflows/cs-stan.yml@cake6
