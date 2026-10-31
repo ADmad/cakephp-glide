@@ -34,7 +34,7 @@ class GlideHelper extends Helper
      *
      * @var array<string, mixed>
      */
-    protected array $_defaultConfig = [
+    protected array $defaultConfig = [
         'baseUrl' => '/images/',
         'secureUrls' => false,
         'signKey' => null,
@@ -45,7 +45,7 @@ class GlideHelper extends Helper
      *
      * @var \League\Glide\Urls\UrlBuilder|null
      */
-    protected ?UrlBuilder $_urlBuilder = null;
+    protected ?UrlBuilder $urlBuilder = null;
 
     /**
      * Creates a formatted IMG element.
@@ -97,18 +97,18 @@ class GlideHelper extends Helper
     public function urlBuilder(?UrlBuilder $urlBuilder = null): UrlBuilder
     {
         if ($urlBuilder !== null) {
-            return $this->_urlBuilder = $urlBuilder;
+            return $this->urlBuilder = $urlBuilder;
         }
 
-        if (!isset($this->_urlBuilder)) {
+        if (!isset($this->urlBuilder)) {
             $config = $this->getConfig();
 
-            $this->_urlBuilder = UrlBuilderFactory::create(
+            $this->urlBuilder = UrlBuilderFactory::create(
                 $config['baseUrl'],
                 $config['secureUrls'] ? ($config['signKey'] ?: Security::getSalt()) : null,
             );
         }
 
-        return $this->_urlBuilder;
+        return $this->urlBuilder;
     }
 }
