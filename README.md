@@ -11,10 +11,6 @@ The plugin consists of a middlware, view helper and a Glide response class.
 
 ## Installation
 
-This branch requires CakePHP 6 and PHP 8.5 or newer. CakePHP 6 is currently in
-development; allow development versions of CakePHP and its dependencies in your
-application's Composer configuration until stable releases are available.
-
 Install the plugin through composer:
 
 ```
