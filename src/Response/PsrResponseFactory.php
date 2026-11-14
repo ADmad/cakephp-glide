@@ -5,7 +5,7 @@ namespace ADmad\Glide\Response;
 
 use ADmad\Glide\Exception\ResponseException;
 use Cake\Http\Response;
-use Laminas\Diactoros\Stream;
+use Cake\Http\Stream;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Glide\Responses\ResponseFactoryInterface;
