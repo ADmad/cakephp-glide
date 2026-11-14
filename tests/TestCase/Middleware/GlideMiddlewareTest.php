@@ -12,9 +12,9 @@ use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
+use Cake\Http\Stream;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Security;
-use Laminas\Diactoros\Stream;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\Signature;
@@ -59,6 +59,13 @@ class GlideMiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
         $this->assertTrue(isset($headers['Content-Length']));
+        $this->assertInstanceOf(Stream::class, $response->getBody());
+        $this->assertSame('image/png', $response->getHeaderLine('Content-Type'));
+        $body = (string)$response->getBody();
+        $this->assertSame(strlen($body), (int)$response->getHeaderLine('Content-Length'));
+        $imageSize = getimagesizefromstring($body);
+        $this->assertNotFalse($imageSize);
+        $this->assertSame(100, $imageSize[0]);
     }
 
     public function testDefaultConfig(): void
@@ -134,6 +141,12 @@ class GlideMiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
         $this->assertSame($fileSize, (int)$headers['Content-Length'][0]);
+        $this->assertInstanceOf(Stream::class, $response->getBody());
+        $this->assertSame('image/png', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(
+            file_get_contents(PLUGIN_ROOT . '/test_app/webroot/upload/cake-logo.png'),
+            (string)$response->getBody(),
+        );
     }
 
     /**
